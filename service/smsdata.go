@@ -45,11 +45,11 @@ func (u *StorageSD) getAll() []*SMSData {
 func main() {
 	storageSMS := NewStorageSD()
 	providers := []string{"Topol", "Rond", "Kildy"}
-	countriesCSV := "country.csv"
+	countriesCSV := "config/country.csv"
 	countriesString := csvInString(countriesCSV)
 	fmt.Println(countriesString)
 
-	smsDataCSV := "../../simulator/skillbox-diploma/sms.data"
+	smsDataCSV := "simulator/skillbox-diploma/sms.data"
 	smsDataString := csvInString(smsDataCSV)
 	splitStrings := strings.Split(smsDataString, "\n")
 	splitStrings = examinationLen(splitStrings, 4)
