@@ -1,4 +1,4 @@
-package smsdata
+package voiceCall
 
 import (
 	"awesomeProject/skillbox/StatusPage/helpers"
