@@ -1,9 +1,8 @@
-package smsdata
+package service
 
 import (
 	"awesomeProject/skillbox/StatusPage/helpers"
 	"fmt"
-	"strconv"
 	"strings"
 )
 
@@ -41,20 +40,20 @@ func (u *StorageSD) getAll() []*SMSData {
 	return smsDats
 }
 
-func main() {
+func SmsData() {
 	storageSMS := NewStorageSD()
 	providers := []string{"Topol", "Rond", "Kildy"}
-	countriesCSV := "../config/country.csv"
+	countriesCSV := "../StatusPage/config/country.csv"
 	countriesString := helpers.CsvInString(countriesCSV)
-	fmt.Println(countriesString)
+	//fmt.Println(countriesString)
 
-	smsDataCSV := "../simulator/sms.data"
+	smsDataCSV := "../StatusPage/simulator/sms.data"
 	smsDataString := helpers.CsvInString(smsDataCSV)
 	splitStrings := strings.Split(smsDataString, "\n")
 	splitStrings = helpers.ExaminationLen(splitStrings, 4)
 	splitStrings = helpers.ExaminationProvaiders(splitStrings, providers)
 	splitStrings = helpers.ExaminationCoutry(splitStrings, countriesString)
-	splitStrings = examinationInts(splitStrings)
+	//splitStrings = examinationInts(splitStrings)
 
 	for i, str := range splitStrings {
 		s := strings.Split(str, ";")
@@ -68,7 +67,7 @@ func main() {
 
 }
 
-func examinationInts(s []string) []string {
+/*func examinationInts(s []string) []string {
 	for i, str := range s {
 		s := strings.Split(str, ";")
 		_, err := strconv.Atoi(s[1])
@@ -82,4 +81,4 @@ func examinationInts(s []string) []string {
 		}
 	}
 	return s
-}
+}*/

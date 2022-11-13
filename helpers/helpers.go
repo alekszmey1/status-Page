@@ -33,10 +33,15 @@ func ExaminationLen(s []string, k int) []string {
 
 func ExaminationProvaiders(s []string, p []string) []string {
 	for i := 0; i < len(s); i++ {
+		k := 0
 		splitValues := strings.Split(s[i], ";")
-		if splitValues[3] != p[0] || splitValues[3] != p[1] || splitValues[3] != p[2] {
-			continue
-		} else {
+		for _, val := range p {
+			if val == splitValues[3] {
+				k = 1
+				break
+			}
+		}
+		if k == 0 {
 			s = append(s[:i], s[i+1:]...)
 			i--
 		}
