@@ -1,2 +1,4 @@
 github.com/ferdypruis/iso3166 v1.1.0 h1:xaD/enYv1245rw9hQQ4uGm8X7t5qM9NHi8xIwXb894g=
 github.com/ferdypruis/iso3166 v1.1.0/go.mod h1:b1SgXBUcTm0a2NNiP0Mdo+V9czo5SImv1IDqd06k4Ps=
+github.com/gorilla/mux v1.8.0 h1:i40aqfkR1h2SlN9hojwV5ZA91wcXFOvkdNIeFDP5koI=
+github.com/gorilla/mux v1.8.0/go.mod h1:DVbg23sWSpFRCP0SfiEN6jmj59UnW/n46BH5rLB71So=

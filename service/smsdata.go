@@ -51,7 +51,7 @@ func SmsData() {
 	smsDataString := helpers.CsvInString(smsDataCSV)
 	splitStrings := strings.Split(smsDataString, "\n")
 	splitStrings = helpers.ExaminationLen(splitStrings, 4)
-	splitStrings = helpers.ExaminationProvaiders(splitStrings, providers)
+	splitStrings = helpers.ExaminationProvaiders(splitStrings, providers, 3)
 	splitStrings = helpers.ExaminationCoutry(splitStrings, countriesString)
 	//splitStrings = examinationInts(splitStrings)
 

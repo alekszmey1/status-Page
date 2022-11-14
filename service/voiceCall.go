@@ -3,7 +3,6 @@ package service
 import (
 	"awesomeProject/skillbox/StatusPage/helpers"
 	"fmt"
-	"strconv"
 	"strings"
 )
 
@@ -24,10 +23,10 @@ func NewVoiceData(str []string) *VoiceCallData {
 	vd.Bandwidth = str[1]
 	vd.ResponseTime = str[2]
 	vd.Provider = str[3]
-	vd.ConnectionStability = stringInFloat32(str[4])
-	vd.TTFB = stringInInt(str[5])
-	vd.VoicePurity = stringInInt(str[6])
-	vd.MedianOfCallsTime = stringInInt(str[7])
+	vd.ConnectionStability = helpers.StringInFloat32(str[4])
+	vd.TTFB = helpers.StringInInt(str[5])
+	vd.VoicePurity = helpers.StringInInt(str[6])
+	vd.MedianOfCallsTime = helpers.StringInInt(str[7])
 
 	return &vd
 }
@@ -61,9 +60,8 @@ func VoiceCall() {
 	smsDataString := helpers.CsvInString(smsDataCSV)
 	splitStrings := strings.Split(smsDataString, "\n")
 	splitStrings = helpers.ExaminationLen(splitStrings, 8)
-	splitStrings = helpers.ExaminationProvaiders(splitStrings, providers)
+	splitStrings = helpers.ExaminationProvaiders(splitStrings, providers, 3)
 	splitStrings = helpers.ExaminationCoutry(splitStrings, countriesString)
-	//splitStrings = examinationInts(splitStrings)
 
 	for i, str := range splitStrings {
 		s := strings.Split(str, ";")
@@ -75,29 +73,4 @@ func VoiceCall() {
 		fmt.Println(v)
 	}
 
-}
-
-/*func examinationInts(s []string) []string {
-	for i, str := range s {
-		s := strings.Split(str, ";")
-		_, err := strconv.Atoi(s[1])
-		if err != nil {
-			s = append(s[:i], s[i+1:]...)
-			break
-		}
-		_, err2 := strconv.Atoi(s[2])
-		if err2 != nil {
-			s = append(s[:i], s[i+1:]...)
-		}
-	}
-	return s
-}*/
-
-func stringInInt(s string) int {
-	i, _ := strconv.Atoi(s)
-	return i
-}
-func stringInFloat32(s string) float32 {
-	i, _ := strconv.ParseFloat(s, 32)
-	return float32(i)
 }

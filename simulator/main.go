@@ -272,7 +272,7 @@ func shuffleAccendentData() []AccendentItem {
 	collection := make([]AccendentItem, 0)
 	status := ""
 	for _, topic := range AccendentTopics {
-		if getRandomIntBetweenValues(0, 1) == 1 {
+		if getRandomIntBetweenValues(0, 2) == 1 {
 			status = accendentStatusActive
 		} else {
 			status = accendentStatusClosed
@@ -426,7 +426,7 @@ func getRandomEmailDeliveryTime() string {
 }
 
 func getRandomIntBetweenValues(min int, max int) int {
-	return rand.Intn(max-min) + min
+	return rand.Intn(max-min+1) + min
 }
 
 func listenAndServeHTTP() {

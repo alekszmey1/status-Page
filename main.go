@@ -11,4 +11,6 @@ func main() {
 	service.SmsData()
 	fmt.Println("проверка голосовых данных")
 	service.VoiceCall()
+	fmt.Println("проверка e-mail данных")
+	service.Email()
 }
