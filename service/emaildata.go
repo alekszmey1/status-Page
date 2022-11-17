@@ -13,11 +13,11 @@ type EmailData struct {
 }
 
 func NewEmailData(str []string) *EmailData {
-	vd := EmailData{}
-	vd.Country = str[0]
-	vd.Provider = str[1]
-	vd.DeliveryTime = helpers.StringInInt(str[2])
-	return &vd
+	ed := EmailData{}
+	ed.Country = str[0]
+	ed.Provider = str[1]
+	ed.DeliveryTime = helpers.StringToint(str[2])
+	return &ed
 }
 
 type StorageED struct {
@@ -42,8 +42,7 @@ func Email() {
 
 	providers := []string{"Orange", "Comcast", "AOL", "Gmail", "Yahoo", "Hotmail", "MSN", "Live", "RediffMail", "GMX",
 		"Protonmail", "Yandex", "Mail.ru"}
-	countriesCSV := "../StatusPage/config/country.csv"
-	countriesString := helpers.CsvInString(countriesCSV)
+	countriesString := helpers.CountryString()
 
 	storageVD := NewStorageED()
 	smsDataCSV := "../StatusPage//simulator/email.data"

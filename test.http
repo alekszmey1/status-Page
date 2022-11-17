@@ -1,0 +1,16 @@
+//получение списка друзей
+GET http://localhost:8080/get HTTP/1.1
+content-type: application/json
+
+{"country":"RU","provider":"topol","bandwidth":"проверка7","response_time":"20"}
+
+###
+
+//	Country      string `json:"country"`
+//	Provider     string `json:"provider"`
+//	Bandwidth    string `json:"bandwidth"`
+//	ResponseTime string `json:"response_time"`
+
+POST http://localhost:8080/getall HTTP/1.1
+//content-type: application/json
+###

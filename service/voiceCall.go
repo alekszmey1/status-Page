@@ -23,10 +23,10 @@ func NewVoiceData(str []string) *VoiceCallData {
 	vd.Bandwidth = str[1]
 	vd.ResponseTime = str[2]
 	vd.Provider = str[3]
-	vd.ConnectionStability = helpers.StringInFloat32(str[4])
-	vd.TTFB = helpers.StringInInt(str[5])
-	vd.VoicePurity = helpers.StringInInt(str[6])
-	vd.MedianOfCallsTime = helpers.StringInInt(str[7])
+	vd.ConnectionStability = helpers.StringToFloat32(str[4])
+	vd.TTFB = helpers.StringToint(str[5])
+	vd.VoicePurity = helpers.StringToint(str[6])
+	vd.MedianOfCallsTime = helpers.StringToint(str[7])
 
 	return &vd
 }
@@ -52,8 +52,7 @@ func (u *StorageVD) getAll() []*VoiceCallData {
 func VoiceCall() {
 
 	providers := []string{"TransparentCalls", "E-Voice", "JustPhone"}
-	countriesCSV := "../StatusPage/config/country.csv"
-	countriesString := helpers.CsvInString(countriesCSV)
+	countriesString := helpers.CountryString()
 
 	storageVD := NewStorageVD()
 	smsDataCSV := "../StatusPage//simulator/voice.data"

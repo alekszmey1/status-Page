@@ -43,9 +43,8 @@ func (u *StorageSD) getAll() []*SMSData {
 func SmsData() {
 	storageSMS := NewStorageSD()
 	providers := []string{"Topol", "Rond", "Kildy"}
-	countriesCSV := "../StatusPage/config/country.csv"
-	countriesString := helpers.CsvInString(countriesCSV)
-	//fmt.Println(countriesString)
+	countriesString := helpers.CountryString()
+	fmt.Println(countriesString)
 
 	smsDataCSV := "../StatusPage/simulator/sms.data"
 	smsDataString := helpers.CsvInString(smsDataCSV)
@@ -53,7 +52,6 @@ func SmsData() {
 	splitStrings = helpers.ExaminationLen(splitStrings, 4)
 	splitStrings = helpers.ExaminationProvaiders(splitStrings, providers, 3)
 	splitStrings = helpers.ExaminationCoutry(splitStrings, countriesString)
-	//splitStrings = examinationInts(splitStrings)
 
 	for i, str := range splitStrings {
 		s := strings.Split(str, ";")
@@ -66,19 +64,3 @@ func SmsData() {
 	}
 
 }
-
-/*func examinationInts(s []string) []string {
-	for i, str := range s {
-		s := strings.Split(str, ";")
-		_, err := strconv.Atoi(s[1])
-		if err != nil {
-			s = append(s[:i], s[i+1:]...)
-			break
-		}
-		_, err2 := strconv.Atoi(s[2])
-		if err2 != nil {
-			s = append(s[:i], s[i+1:]...)
-		}
-	}
-	return s
-}*/
