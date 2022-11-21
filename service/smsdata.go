@@ -44,7 +44,7 @@ func SmsData() {
 	storageSMS := NewStorageSD()
 	providers := []string{"Topol", "Rond", "Kildy"}
 	countriesString := helpers.CountryString()
-	fmt.Println(countriesString)
+	//fmt.Println(countriesString)
 
 	smsDataCSV := "../StatusPage/simulator/sms.data"
 	smsDataString := helpers.CsvInString(smsDataCSV)

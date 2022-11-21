@@ -2,7 +2,8 @@
 GET http://localhost:8080/get HTTP/1.1
 content-type: application/json
 
-{"country":"RU","provider":"topol","bandwidth":"проверка7","response_time":"20"}
+{"country":"RU","provider":"Rond","bandwidth":"проверка3","response_time":"145","country":"RU","provider":"Rond","bandwidth":"проверка4","response_time":"145"}
+
 
 ###
 
@@ -11,6 +12,6 @@ content-type: application/json
 //	Bandwidth    string `json:"bandwidth"`
 //	ResponseTime string `json:"response_time"`
 
-POST http://localhost:8080/getall HTTP/1.1
+POST http://localhost:8383/getall HTTP/1.1
 //content-type: application/json
 ###

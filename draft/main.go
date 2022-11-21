@@ -1,4 +1,4 @@
-package service
+package main
 
 import (
 	"awesomeProject/skillbox/StatusPage/helpers"
@@ -62,7 +62,7 @@ func (s *storageMMS) Get(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(s)
 }
 
-/*func (s *storageMMS) GetAll(w http.ResponseWriter, r *http.Request) { // возвращает всех пользователей
+func (s *storageMMS) GetAll(w http.ResponseWriter, r *http.Request) { // возвращает всех пользователей
 	if r.Method == "POST" {
 		for _, user := range s.storage { //итерируемся по всем пользователям в mape
 			fmt.Println(user)
@@ -71,14 +71,14 @@ func (s *storageMMS) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusBadRequest)
-}*/
+}
 
-func MmsData() {
+func main() {
 	MMSD := NewStorageMMSD()
 	mux := http.NewServeMux()
 	mux.HandleFunc("/get", MMSD.Get)
 	//mux.HandleFunc("/getall", MMSD.GetAll)
-	http.ListenAndServe("localhost:8383", mux)
+	http.ListenAndServe("localhost:8080", mux)
 }
 
 func createMMS(b []byte) *MMSData {
