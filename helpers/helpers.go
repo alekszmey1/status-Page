@@ -68,10 +68,10 @@ func CheckProviders(s string, p []string) bool {
 	return b
 }
 
-func ExaminationCoutry(s []string, p string) []string {
+func ExaminationCountry(s []string, p string) []string {
 	for i := 0; i < len(s); i++ {
 		splitValues := strings.Split(s[i], ";")
-		l := CheckCoutry(p, splitValues[0])
+		l := CheckCountry(p, splitValues[0])
 		if l == true {
 			continue
 		} else {
@@ -83,7 +83,7 @@ func ExaminationCoutry(s []string, p string) []string {
 	return s
 }
 
-func CheckCoutry(s string, p string) bool {
+func CheckCountry(s string, p string) bool {
 	//fmt.Printf("ищем подстроку %s в строке %s \n", s, p)
 	l := strings.Contains(strings.ToUpper(s), strings.ToUpper(p))
 	return l
@@ -97,3 +97,36 @@ func StringToFloat32(s string) float32 {
 	i, _ := strconv.ParseFloat(s, 32)
 	return float32(i)
 }
+
+func SliceByteToSliceString(content []byte) []string {
+	stringContent := string(content)
+	stringContent = strings.Trim(stringContent, "{}")
+	stringSliceContent := strings.Split(stringContent, ",")
+	return stringSliceContent
+}
+
+/*func putInStorage(slice []string, s *storageSupport, k int) {
+	i := 0
+	var miniStringSlice []string
+	for _, value := range slice {
+		miniStringSlice = append(miniStringSlice, value)
+		if i == k {
+			supportString := "{" + strings.Join(miniStringSlice, ",") + "}"
+			support := CreateMMS([]byte(supportString))
+			s.put(support)
+			miniStringSlice = nil
+			i = 0
+			continue
+		}
+		i++
+	}
+}*/
+
+/*func CreateMMS(b []byte) *SupportData {
+	var sd *SupportData
+	if err := json.Unmarshal(b, &sd); err != nil {
+		sd = nil
+	}
+	return sd
+}
+*/

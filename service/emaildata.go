@@ -50,7 +50,7 @@ func Email() {
 	splitStrings := strings.Split(smsDataString, "\n")
 	splitStrings = helpers.ExaminationLen(splitStrings, 3)
 	splitStrings = helpers.ExaminationProvaiders(splitStrings, providers, 1)
-	splitStrings = helpers.ExaminationCoutry(splitStrings, countriesString)
+	splitStrings = helpers.ExaminationCountry(splitStrings, countriesString)
 
 	for i, str := range splitStrings {
 		s := strings.Split(str, ";")

@@ -7,7 +7,7 @@ import (
 
 func main() {
 
-	fmt.Println("запуск программы")
+	/*fmt.Println("запуск программы")
 	fmt.Println("проверка смс данных")
 	service.SmsData()
 	fmt.Println("проверка голосовых данных")
@@ -15,7 +15,7 @@ func main() {
 	fmt.Println("проверка e-mail данных")
 	service.Email()
 	fmt.Println("проверка биллинга")
-	service.Billing()
+	service.Billing()*/
 	fmt.Println("проверка MMS")
 	service.MmsData()
 
