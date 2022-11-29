@@ -10,7 +10,7 @@ func main() {
 	log.Println("запуск программы")
 	log.Println("проверка смс данных")
 	service.SmsData()
-	log.Println("проверка голосовых данных")
+	/*log.Println("проверка голосовых данных")
 	service.VoiceCall()
 	log.Println("проверка e-mail данных")
 	service.Email()
@@ -20,4 +20,7 @@ func main() {
 	service.MmsData()
 	log.Println("проверка support")
 	service.Support()
+	log.Println("проверка incident")
+	service.Incident()*/
+
 }
