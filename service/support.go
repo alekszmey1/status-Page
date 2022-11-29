@@ -15,18 +15,15 @@ type StorageData struct {
 func Support() {
 	log.Println("создан  сервер")
 	url := "http://127.0.0.1:8383/support"
-	mmsStorage, _ := createStorageSupport(url)
-	for _, data := range mmsStorage {
-		fmt.Println(data)
-	}
+	st, _ := createStorageSupport(url)
+	fmt.Println(st)
 }
 
-func createStorageSupport(url string) ([]*StorageData, error) {
+func createStorageSupport(url string) ([]StorageData, error) {
 	stringContent, err := helpers.UrlToString(url)
 	stringContentSlice := helpers.StringToSliceString(stringContent)
 	m := makeStorageSupport(stringContentSlice)
 	cl := cleanSliceSupport(m)
-	//fmt.Println(stringContent)
 	return cl, err
 }
 func makeStorageSupport(str []string) []*StorageData {
@@ -47,11 +44,11 @@ func createSupport(b []byte) *StorageData {
 	}
 	return sup
 }
-func cleanSliceSupport(m []*StorageData) []*StorageData {
-	var n []*StorageData
+func cleanSliceSupport(m []*StorageData) []StorageData {
+	var n []StorageData
 	for _, val := range m {
 		if val != nil {
-			n = append(n, val)
+			n = append(n, *val)
 		}
 	}
 	log.Println("почистили слайс support от пустых срезов")

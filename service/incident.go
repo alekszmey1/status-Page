@@ -16,12 +16,10 @@ func Incident() {
 	log.Println("создан  сервер")
 	url := "http://127.0.0.1:8383/accendent"
 	incidentStorage, _ := createStorageIncident(url)
-	for _, data := range incidentStorage {
-		fmt.Println(data)
-	}
+	fmt.Println(incidentStorage)
 }
 
-func createStorageIncident(url string) ([]*IncidentData, error) {
+func createStorageIncident(url string) ([]IncidentData, error) {
 	stringContent, err := helpers.UrlToString(url)
 	stringContentSlice := helpers.StringToSliceString(stringContent)
 	m := makeStorageIncident(stringContentSlice)
@@ -47,12 +45,12 @@ func createIncident(b []byte) *IncidentData {
 	}
 	return inc
 }
-func cleanSliceIncident(m []*IncidentData) []*IncidentData {
-	var n []*IncidentData
+func cleanSliceIncident(m []*IncidentData) []IncidentData {
+	var n []IncidentData
 	for _, val := range m {
 		if val != nil {
 			if val.Status == "active" || val.Status == "closed" {
-				n = append(n, val)
+				n = append(n, *val)
 			}
 
 		}

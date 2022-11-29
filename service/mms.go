@@ -3,9 +3,7 @@ package service
 import (
 	"awesomeProject/skillbox/StatusPage/helpers"
 	"encoding/json"
-	"fmt"
 	"log"
-	"strings"
 )
 
 type MMSData struct {
@@ -19,17 +17,19 @@ func MmsData() {
 	log.Println("создан  сервер")
 	url := "http://127.0.0.1:8383/mms"
 	mmsStorage, _ := createStorageMMS(url)
-	for _, data := range mmsStorage {
-		fmt.Println(data)
-	}
+	log.Println(mmsStorage)
 }
 
-func createStorageMMS(url string) ([]*MMSData, error) {
+func createStorageMMS(url string) ([]MMSData, error) {
 	stringContent, err := helpers.UrlToString(url)
 	stringContentSlice := helpers.StringToSliceString(stringContent)
 	m := makeStorageMMS(stringContentSlice)
 	c := cleanSliceMMS(m)
-	return c, err
+	var st []MMSData
+	for _, data := range c {
+		st = append(st, *data)
+	}
+	return st, err
 }
 func makeStorageMMS(str []string) []*MMSData {
 	var MD []*MMSData
@@ -39,15 +39,6 @@ func makeStorageMMS(str []string) []*MMSData {
 	}
 	log.Println("заанмаршали каждое значение массива строк, создали срез структур формата mmsdata")
 	return MD
-}
-
-func stringToSliceString(s string) []string {
-	s2 := strings.Trim(s, "[][]")
-	s2 = strings.Replace(s2, "[", "", -1)
-	s = strings.Replace(s2, "},{", "};{", -1)
-	str := strings.Split(s, ";")
-	log.Println("убрали лишние скобки, разбили строку на массив строк")
-	return str
 }
 
 func createMMS(b []byte) *MMSData {
