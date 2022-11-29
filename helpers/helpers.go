@@ -1,7 +1,11 @@
 package helpers
 
 import (
+	"fmt"
 	"io"
+	"log"
+	"net/http"
+	"net/http/httputil"
 	"os"
 	"strconv"
 	"strings"
@@ -98,35 +102,28 @@ func StringToFloat32(s string) float32 {
 	return float32(i)
 }
 
-func SliceByteToSliceString(content []byte) []string {
-	stringContent := string(content)
-	stringContent = strings.Trim(stringContent, "{}")
-	stringSliceContent := strings.Split(stringContent, ",")
-	return stringSliceContent
+func StringToSliceString(s string) []string {
+	s2 := strings.Trim(s, "[][]")
+	s2 = strings.Replace(s2, "[", "", -1)
+	s = strings.Replace(s2, "},{", "};{", -1)
+	str := strings.Split(s, ";")
+	log.Println("убрали лишние скобки, разбили строку на массив строк")
+	return str
 }
 
-/*func putInStorage(slice []string, s *storageSupport, k int) {
-	i := 0
-	var miniStringSlice []string
-	for _, value := range slice {
-		miniStringSlice = append(miniStringSlice, value)
-		if i == k {
-			supportString := "{" + strings.Join(miniStringSlice, ",") + "}"
-			support := CreateMMS([]byte(supportString))
-			s.put(support)
-			miniStringSlice = nil
-			i = 0
-			continue
-		}
-		i++
+func UrlToString(url string) (string, error) {
+	var s string
+	resp, err := http.Get(url)
+	if err != nil {
+		return s, fmt.Errorf("получение данных с url  %s выдало ошибку %s \n", url, err.Error())
 	}
-}*/
-
-/*func CreateMMS(b []byte) *SupportData {
-	var sd *SupportData
-	if err := json.Unmarshal(b, &sd); err != nil {
-		sd = nil
+	if resp.StatusCode != http.StatusOK {
+		return s, fmt.Errorf("support respose failed with status code %d : \n", resp.StatusCode)
 	}
-	return sd
+	bufer, err := httputil.DumpResponse(resp, true)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	s = string(bufer)
+	return s, nil
 }
-*/
