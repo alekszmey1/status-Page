@@ -1,6 +1,7 @@
 package service
 
 import (
+	"awesomeProject/skillbox/StatusPage/helpers"
 	"fmt"
 	"math"
 	"strings"
@@ -26,27 +27,9 @@ func NewBillingData(b []bool) *BillingData {
 	return &bd
 }
 
-type StorageBD struct {
-	storageBillingData map[int]*BillingData
-}
-
-func NewStorageBD() *StorageBD {
-	return &StorageBD{storageBillingData: make(map[int]*BillingData)}
-}
-func (u *StorageBD) put(bd *BillingData, i int) {
-	u.storageBillingData[i] = bd
-}
-func (u *StorageBD) getAll() []*BillingData {
-	var billingDats []*BillingData
-	for _, v := range u.storageBillingData {
-		billingDats = append(billingDats, v)
-	}
-	return billingDats
-}
-
 func Billing() {
-	BD := NewStorageBD()
-	s := "00010011"
+	billingDataCSV := "../StatusPage/simulator/billing.data"
+	s := helpers.CsvInString(billingDataCSV)
 	rns := strings.Split(s, "")
 	for i, j := 0, len(rns)-1; i < j; i, j = i+1, j-1 {
 		rns[i], rns[j] = rns[j], rns[i]
@@ -66,9 +49,5 @@ func Billing() {
 	fmt.Println(k)
 
 	l := NewBillingData(b)
-	BD.put(l, 0)
-
-	for _, v := range BD.getAll() {
-		fmt.Println(v)
-	}
+	fmt.Println(l)
 }
