@@ -13,8 +13,8 @@ type IncidentData struct {
 }
 
 func Incident() {
-	log.Println("создан  сервер")
 	url := "http://127.0.0.1:8383/accendent"
+	log.Println("открыли url " + url)
 	incidentStorage, _ := createStorageIncident(url)
 	fmt.Println(incidentStorage)
 }
@@ -24,7 +24,7 @@ func createStorageIncident(url string) ([]IncidentData, error) {
 	stringContentSlice := helpers.StringToSliceString(stringContent)
 	m := makeStorageIncident(stringContentSlice)
 	cl := cleanSliceIncident(m)
-	//fmt.Println(stringContent)
+
 	return cl, err
 }
 func makeStorageIncident(str []string) []*IncidentData {

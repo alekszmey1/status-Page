@@ -2,14 +2,15 @@ package service
 
 import (
 	"awesomeProject/skillbox/StatusPage/helpers"
+	"fmt"
 	"strings"
 )
 
 type SMSData struct {
-	Country      string
-	Bandwidth    string
-	ResponseTime string
-	Provider     string
+	Country      string `json:"country"`
+	Bandwidth    string `json:"bandwidth"`
+	ResponseTime string `json:"response_time"`
+	Provider     string `json:"provider"`
 }
 
 func NewSMSData(str []string) *SMSData {
@@ -25,8 +26,8 @@ type StorageSD struct {
 	storageSMSData map[int]*SMSData
 }
 
-func SmsData() {
-	var storageSMS []SMSData
+func SmsData() []*SMSData {
+	var storageSMS []*SMSData
 	providers := []string{"Topol", "Rond", "Kildy"}
 	countriesString := helpers.CountryString()
 	smsDataCSV := "../StatusPage/simulator/sms.data"
@@ -38,7 +39,9 @@ func SmsData() {
 	for _, str := range splitStrings {
 		s := strings.Split(str, ";")
 		l := NewSMSData(s)
-		storageSMS = append(storageSMS, *l)
+		storageSMS = append(storageSMS, l)
 	}
+	fmt.Println(storageSMS)
+	return storageSMS
 
 }

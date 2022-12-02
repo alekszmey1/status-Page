@@ -14,8 +14,8 @@ type MMSData struct {
 }
 
 func MmsData() {
-	log.Println("создан  сервер")
 	url := "http://127.0.0.1:8383/mms"
+	log.Println("открыли url " + url)
 	mmsStorage, _ := createStorageMMS(url)
 	log.Println(mmsStorage)
 }
