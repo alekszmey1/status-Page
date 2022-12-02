@@ -24,4 +24,6 @@ func main() {
 		service.Incident()*/
 	log.Println("запуск сортировки смс")
 	service.SortSMSOne()
+	log.Println("запуск сортировки mмс")
+	service.SortMMSOne()
 }

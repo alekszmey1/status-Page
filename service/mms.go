@@ -13,23 +13,25 @@ type MMSData struct {
 	ResponseTime string `json:"response_time"`
 }
 
-func MmsData() {
+func MmsData() []*MMSData {
 	url := "http://127.0.0.1:8383/mms"
 	log.Println("открыли url " + url)
 	mmsStorage, _ := createStorageMMS(url)
 	log.Println(mmsStorage)
+	return mmsStorage
+
 }
 
-func createStorageMMS(url string) ([]MMSData, error) {
+func createStorageMMS(url string) ([]*MMSData, error) {
 	stringContent, err := helpers.UrlToString(url)
 	stringContentSlice := helpers.StringToSliceString(stringContent)
 	m := makeStorageMMS(stringContentSlice)
 	c := cleanSliceMMS(m)
-	var st []MMSData
+	/*var st []*MMSData
 	for _, data := range c {
-		st = append(st, *data)
-	}
-	return st, err
+		st = append(st, data)
+	}*/
+	return c, err
 }
 func makeStorageMMS(str []string) []*MMSData {
 	var MD []*MMSData

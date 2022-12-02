@@ -2,7 +2,6 @@ package service
 
 import (
 	"awesomeProject/skillbox/StatusPage/helpers"
-	"fmt"
 	"strings"
 )
 
@@ -41,7 +40,5 @@ func SmsData() []*SMSData {
 		l := NewSMSData(s)
 		storageSMS = append(storageSMS, l)
 	}
-	fmt.Println(storageSMS)
 	return storageSMS
-
 }
