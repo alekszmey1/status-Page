@@ -142,3 +142,85 @@ func sliceCountryReplaceMMS(s []*MMSData, m map[string]string) []*MMSData {
 	}
 	return s
 }
+
+func SortEmail() {
+	emailSlice := Email()
+	countryEmail := sortCountryEmail(emailSlice)
+	m := makeMapEmail(countryEmail)
+	/*for s, data := range m {
+		fmt.Println(s, data)
+	}*/
+	emailMap := minAndMaxValueMap(m)
+	for s, i := range emailMap {
+		fmt.Println(s, i)
+	}
+
+}
+func sortCountryEmail(st []EmailData) []EmailData {
+	s := make([]EmailData, len(st))
+	copy(s, st[:])
+	for i := 0; i < len(s); i++ {
+		var y = i
+		for j := i; j < len(s); j++ {
+			if strings.Compare(s[i].Country, s[j].Country) > 0 {
+				y = j
+				s[i], s[y] = s[y], s[i]
+			}
+		}
+	}
+	fmt.Println(" проведена сортировка email по странам")
+	return s
+}
+
+func makeMapEmail(e []EmailData) map[string][]EmailData {
+	m := make(map[string][]EmailData)
+	country := e[0].Country
+	var s []EmailData
+	for i := 0; i < len(e); i++ {
+		if e[i].Country == country {
+			s = append(s, e[i])
+			if i == len(e)-1 {
+				m[country] = s
+			}
+		} else {
+			m[country] = s
+			country = e[i].Country
+			s = nil
+			s = append(s, e[i])
+			if i == len(e)-1 {
+				m[country] = s
+			}
+		}
+	}
+	fmt.Println("сделана сохранение в map по странам")
+	return m
+}
+
+func minAndMaxValue(st []EmailData) [][]EmailData {
+	s := make([]EmailData, len(st))
+	copy(s, st[:])
+	for i := 0; i < len(s); i++ {
+		var y = i
+		for j := i; j < len(s); j++ {
+			if s[i].DeliveryTime > s[j].DeliveryTime {
+				y = j
+				s[i], s[y] = s[y], s[i]
+			}
+		}
+	}
+	sliceMin := []EmailData{s[0], s[1], s[2]}
+	sliceMax := []EmailData{s[len(s)-3], s[len(s)-2], s[len(s)-1]}
+	var sliceMinMax [][]EmailData
+	sliceMinMax = append(sliceMinMax, sliceMin, sliceMax)
+	return sliceMinMax
+}
+
+func minAndMaxValueMap(m map[string][]EmailData) map[string][][]EmailData {
+	desiredMap := make(map[string][][]EmailData)
+	for s, data := range m {
+		x := minAndMaxValue(data)
+		desiredMap[s] = x
+	}
+	fmt.Println("проведена сортировка по минимальным и максимальным значениям скорости провайдеров")
+	return desiredMap
+}

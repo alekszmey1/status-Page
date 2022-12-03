@@ -2,7 +2,6 @@ package service
 
 import (
 	"awesomeProject/skillbox/StatusPage/helpers"
-	"fmt"
 	"strings"
 )
 
@@ -20,7 +19,7 @@ func NewEmailData(str []string) *EmailData {
 	return &ed
 }
 
-func Email() {
+func Email() []EmailData {
 
 	providers := []string{"Orange", "Comcast", "AOL", "Gmail", "Yahoo", "Hotmail", "MSN", "Live", "RediffMail", "GMX",
 		"Protonmail", "Yandex", "Mail.ru"}
@@ -39,6 +38,7 @@ func Email() {
 		l := NewEmailData(s)
 		storageED = append(storageED, *l)
 	}
-	fmt.Println(storageED)
+	return storageED
+	//fmt.Println(storageED)
 
 }

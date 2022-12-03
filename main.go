@@ -22,8 +22,10 @@ func main() {
 		service.Support()
 		log.Println("проверка incident")
 		service.Incident()*/
-	log.Println("запуск сортировки смс")
+	/*log.Println("запуск сортировки смс")
 	service.SortSMSOne()
 	log.Println("запуск сортировки mмс")
-	service.SortMMSOne()
+	service.SortMMSOne()*/
+	log.Println("запуск сортировки  email ")
+	service.SortEmail()
 }
