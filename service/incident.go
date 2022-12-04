@@ -3,8 +3,6 @@ package service
 import (
 	"awesomeProject/skillbox/StatusPage/helpers"
 	"encoding/json"
-	"fmt"
-	"log"
 )
 
 type IncidentData struct {
@@ -12,11 +10,12 @@ type IncidentData struct {
 	Status string `json:"status"'`
 }
 
-func Incident() {
+func Incident() []IncidentData {
 	url := "http://127.0.0.1:8383/accendent"
-	log.Println("открыли url " + url)
+	//log.Println("открыли url " + url)
 	incidentStorage, _ := createStorageIncident(url)
-	fmt.Println(incidentStorage)
+	//fmt.Println(incidentStorage)
+	return incidentStorage
 }
 
 func createStorageIncident(url string) ([]IncidentData, error) {
@@ -33,14 +32,14 @@ func makeStorageIncident(str []string) []*IncidentData {
 		mms := createIncident([]byte(s2))
 		SD = append(SD, mms)
 	}
-	log.Println("заанмаршали каждое значение массива строк, создали срез структур формата mmsdata")
+	//log.Println("заанмаршали каждое значение массива строк, создали срез структур формата mmsdata")
 	return SD
 }
 
 func createIncident(b []byte) *IncidentData {
 	var inc *IncidentData
 	if err := json.Unmarshal(b, &inc); err != nil {
-		log.Printf("возникла ошибка в анмаршале %s ", err)
+		//log.Printf("возникла ошибка в анмаршале %s ", err)
 		inc = nil
 	}
 	return inc
@@ -55,6 +54,6 @@ func cleanSliceIncident(m []*IncidentData) []IncidentData {
 
 		}
 	}
-	log.Println("почистили слайс support от пустых срезов")
+	//log.Println("почистили слайс support от пустых срезов")
 	return n
 }

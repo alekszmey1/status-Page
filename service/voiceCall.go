@@ -30,7 +30,7 @@ func NewVoiceData(str []string) *VoiceCallData {
 	return &vd
 }
 
-func VoiceCall() {
+func VoiceCall() []VoiceCallData {
 
 	providers := []string{"TransparentCalls", "E-Voice", "JustPhone"}
 	countriesString := helpers.CountryString()
@@ -48,5 +48,6 @@ func VoiceCall() {
 		l := NewVoiceData(s)
 		storageVoice = append(storageVoice, *l)
 	}
+	return storageVoice
 
 }

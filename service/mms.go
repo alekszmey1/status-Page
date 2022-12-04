@@ -3,7 +3,6 @@ package service
 import (
 	"awesomeProject/skillbox/StatusPage/helpers"
 	"encoding/json"
-	"log"
 )
 
 type MMSData struct {
@@ -15,9 +14,9 @@ type MMSData struct {
 
 func MmsData() []*MMSData {
 	url := "http://127.0.0.1:8383/mms"
-	log.Println("открыли url " + url)
+	//log.Println("открыли url " + url)
 	mmsStorage, _ := createStorageMMS(url)
-	log.Println(mmsStorage)
+	//log.Println(mmsStorage)
 	return mmsStorage
 
 }
@@ -39,14 +38,14 @@ func makeStorageMMS(str []string) []*MMSData {
 		mms := createMMS([]byte(s2))
 		MD = append(MD, mms)
 	}
-	log.Println("заанмаршали каждое значение массива строк, создали срез структур формата mmsdata")
+	//log.Println("заанмаршали каждое значение массива строк, создали срез структур формата mmsdata")
 	return MD
 }
 
 func createMMS(b []byte) *MMSData {
 	var mms *MMSData
 	if err := json.Unmarshal(b, &mms); err != nil {
-		log.Printf("возникла ошибка в анмаршале %s ", err)
+		//log.Printf("возникла ошибка в анмаршале %s ", err)
 		mms = nil
 	}
 	return mms
@@ -65,6 +64,6 @@ func cleanSliceMMS(m []*MMSData) []*MMSData {
 			}
 		}
 	}
-	log.Println("почистили слайс mmsdata от пустых срезов, и проверили на соответствие странам и провайдерам")
+	//log.Println("почистили слайс mmsdata от пустых срезов, и проверили на соответствие странам и провайдерам")
 	return n
 }

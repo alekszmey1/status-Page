@@ -6,25 +6,55 @@ import (
 	"strings"
 )
 
-/*
-type Result struct {
+type ResultT struct {
 	Status bool       `json:"status"`
-	Data   ResultSelt `json:"data"`
+	Data   ResultSetT `json:"data"`
 	Error  string     `json:"error"`
 }
 
+type ResultSetT struct {
+	SMS       [][]SMSData              `json:"sms"`
+	MMS       [][]MMSData              `json:"mms"`
+	VoiceCall []VoiceCallData          `json:"voice_call"`
+	Email     map[string][][]EmailData `json:"email"`
+	Billing   BillingData              `json:"billing"`
+	Support   []int                    `json:"support"`
+	Incidents []IncidentData           `json:"incident"`
+}
 
-type ResultSelt struct {
-	SMS         [][]SMSData              `json:"sms"`
-	MMS         [][]MMSData              `json:"mms"`
-	VoiceCall   []VoiceCallData          `json:"voice_call"`
-	Email       map[string][][]EmailData `json:"email"`
-	BillingData `json:"billing"`
-	Support     []int          `json:"support"`
-	Incident    []IncidentData `json:"incident"`
-}*/
+func MakeResultT() ResultT {
+	r := ResultT{}
+	rst := GetResultData()
+	fmt.Println(rst)
+	b := true
+	if rst.MMS == nil || rst.SMS == nil || rst.Incidents == nil || rst.Support == nil || rst.VoiceCall == nil ||
+		rst.Email == nil /* || rst.Billing == nil */ {
+		b = false
+	}
+	if b == true {
+		r.Data = rst
 
-func SortSMSOne() {
+	} else {
+		r.Error = "Error on collect data"
+	}
+	r.Status = b
+	return r
+}
+
+func GetResultData() ResultSetT {
+	r := ResultSetT{
+		SMS:       sortSMSOne(),
+		MMS:       sortMMSOne(),
+		VoiceCall: VoiceCall(),
+		Email:     sortEmail(),
+		Billing:   Billing(),
+		Support:   sortSupport(),
+		Incidents: sortIncident(),
+	}
+	return r
+}
+
+func sortSMSOne() [][]SMSData {
 	smsSlice := SmsData()
 	cm := helpers.CountryMap()
 	sms2 := sliceCountryReplaceSMS(smsSlice, cm)
@@ -36,6 +66,7 @@ func SortSMSOne() {
 	smsCountry := sortCountrySMS(newSmsSlice)
 	var sliceSliceSms [][]SMSData
 	sliceSliceSms = append(sliceSliceSms, smsProvider, smsCountry)
+	return sliceSliceSms
 }
 
 func sortProviderSMS(st []SMSData) []SMSData {
@@ -82,7 +113,7 @@ func sliceCountryReplaceSMS(s []*SMSData, m map[string]string) []*SMSData {
 	return s
 }
 
-func SortMMSOne() {
+func sortMMSOne() [][]MMSData {
 	smsSlice := MmsData()
 	cm := helpers.CountryMap()
 	sms2 := sliceCountryReplaceMMS(smsSlice, cm)
@@ -94,9 +125,10 @@ func SortMMSOne() {
 	mmsCountry := sortCountryMMS(newSmsSlice)
 	var sliceSliceMms [][]MMSData
 	sliceSliceMms = append(sliceSliceMms, mmsProvider, mmsCountry)
-	for _, sm := range sliceSliceMms {
+	/*for _, sm := range sliceSliceMms {
 		fmt.Println(sm)
-	}
+	}*/
+	return sliceSliceMms
 }
 
 func sortProviderMMS(st []MMSData) []MMSData {
@@ -143,7 +175,7 @@ func sliceCountryReplaceMMS(s []*MMSData, m map[string]string) []*MMSData {
 	return s
 }
 
-func SortEmail() {
+func sortEmail() map[string][][]EmailData {
 	emailSlice := Email()
 	countryEmail := sortCountryEmail(emailSlice)
 	m := makeMapEmail(countryEmail)
@@ -151,11 +183,13 @@ func SortEmail() {
 		fmt.Println(s, data)
 	}*/
 	emailMap := minAndMaxValueMap(m)
-	for s, i := range emailMap {
+	/*for s, i := range emailMap {
 		fmt.Println(s, i)
-	}
+	}*/
+	return emailMap
 
 }
+
 func sortCountryEmail(st []EmailData) []EmailData {
 	s := make([]EmailData, len(st))
 	copy(s, st[:])
@@ -168,10 +202,9 @@ func sortCountryEmail(st []EmailData) []EmailData {
 			}
 		}
 	}
-	fmt.Println(" проведена сортировка email по странам")
+	//fmt.Println(" проведена сортировка email по странам")
 	return s
 }
-
 func makeMapEmail(e []EmailData) map[string][]EmailData {
 	m := make(map[string][]EmailData)
 	country := e[0].Country
@@ -195,7 +228,6 @@ func makeMapEmail(e []EmailData) map[string][]EmailData {
 	fmt.Println("сделана сохранение в map по странам")
 	return m
 }
-
 func minAndMaxValue(st []EmailData) [][]EmailData {
 	s := make([]EmailData, len(st))
 	copy(s, st[:])
@@ -214,13 +246,69 @@ func minAndMaxValue(st []EmailData) [][]EmailData {
 	sliceMinMax = append(sliceMinMax, sliceMin, sliceMax)
 	return sliceMinMax
 }
-
 func minAndMaxValueMap(m map[string][]EmailData) map[string][][]EmailData {
 	desiredMap := make(map[string][][]EmailData)
 	for s, data := range m {
 		x := minAndMaxValue(data)
 		desiredMap[s] = x
 	}
-	fmt.Println("проведена сортировка по минимальным и максимальным значениям скорости провайдеров")
+	//fmt.Println("проведена сортировка по минимальным и максимальным значениям скорости провайдеров")
 	return desiredMap
+}
+
+func sortSupport() []int {
+	sup := Support()
+	fmt.Println(sup)
+	sumTic := sumTickets(sup)
+	loading := load(sumTic)
+	waitTime := waitingTime(sumTic)
+	sort := []int{loading, waitTime}
+	//fmt.Println(sort)
+	return sort
+}
+
+func load(i int) int {
+	a := 0
+	if i < 9 {
+		a = 1
+	} else if i > 16 {
+		a = 3
+	} else {
+		a = 2
+	}
+	return a
+}
+func sumTickets(s []SupportData) int {
+	x := 0
+	for _, data := range s {
+		x += data.ActiveTickets
+	}
+	return x
+}
+func waitingTime(i int) int {
+	x := i * (60 / 18)
+	return x
+}
+
+func sortIncident() []IncidentData {
+	inc := Incident()
+	incSort := sortingIncident(inc)
+	//fmt.Println(incSort)
+	return incSort
+}
+
+func sortingIncident(st []IncidentData) []IncidentData {
+	s := make([]IncidentData, len(st))
+	copy(s, st[:])
+	for i := 0; i < len(s); i++ {
+		var y = i
+		for j := i; j < len(s); j++ {
+			if strings.Compare(s[i].Status, s[j].Status) > 0 {
+				y = j
+				s[i], s[y] = s[y], s[i]
+			}
+		}
+	}
+	//fmt.Println(" проведена сортировка incident по странам")
+	return s
 }

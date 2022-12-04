@@ -2,7 +2,6 @@ package service
 
 import (
 	"awesomeProject/skillbox/StatusPage/helpers"
-	"fmt"
 	"math"
 	"strings"
 )
@@ -16,7 +15,7 @@ type BillingData struct {
 	CheckoutPage   bool `json:"checkout_page"`
 }
 
-func NewBillingData(b []bool) *BillingData {
+func NewBillingData(b []bool) BillingData {
 	bd := BillingData{}
 	bd.CreateCustomer = b[0]
 	bd.Purchase = b[1]
@@ -24,10 +23,10 @@ func NewBillingData(b []bool) *BillingData {
 	bd.Recurring = b[3]
 	bd.FraudControl = b[4]
 	bd.CheckoutPage = b[5]
-	return &bd
+	return bd
 }
 
-func Billing() {
+func Billing() BillingData {
 	billingDataCSV := "../StatusPage/simulator/billing.data"
 	s := helpers.CsvInString(billingDataCSV)
 	rns := strings.Split(s, "")
@@ -44,10 +43,9 @@ func Billing() {
 		} else {
 			b = append(b, false)
 		}
-
 	}
-	fmt.Println(k)
-
+	//fmt.Println(k)
 	l := NewBillingData(b)
-	fmt.Println(l)
+	//fmt.Println(l)
+	return l
 }

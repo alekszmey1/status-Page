@@ -1,13 +1,14 @@
 package main
 
 import (
-	"awesomeProject/skillbox/StatusPage/service"
+	"awesomeProject/skillbox/StatusPage/server"
 	"log"
 )
 
 func main() {
 
 	log.Println("запуск программы")
+	server.App()
 	/*log.Println("проверка смс данных")
 	service.SmsData() /*
 		log.Println("проверка голосовых данных")
@@ -25,7 +26,11 @@ func main() {
 	/*log.Println("запуск сортировки смс")
 	service.SortSMSOne()
 	log.Println("запуск сортировки mмс")
-	service.SortMMSOne()*/
+	service.SortMMSOne()
 	log.Println("запуск сортировки  email ")
 	service.SortEmail()
+	log.Println("запуск сортировки support ")
+	service.SortSupport()
+	log.Println("запуск сортировки support ")
+	service.SortIncident()*/
 }
