@@ -3,6 +3,8 @@ package service
 import (
 	"awesomeProject/skillbox/StatusPage/helpers"
 	"strings"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type SMSData struct {
@@ -26,10 +28,11 @@ type StorageSD struct {
 }
 
 func SmsData() []*SMSData {
+	log.Info("Получаем данные sms")
 	var storageSMS []*SMSData
 	providers := []string{"Topol", "Rond", "Kildy"}
 	countriesString := helpers.CountryString()
-	smsDataCSV := "../StatusPage/simulator/sms.data"
+	smsDataCSV := "./simulator/sms.data"
 	smsDataString := helpers.CsvInString(smsDataCSV)
 	splitStrings := strings.Split(smsDataString, "\n")
 	splitStrings = helpers.ExaminationLen(splitStrings, 4)
@@ -40,5 +43,6 @@ func SmsData() []*SMSData {
 		l := NewSMSData(s)
 		storageSMS = append(storageSMS, l)
 	}
+	log.Info("Получены данные sms")
 	return storageSMS
 }

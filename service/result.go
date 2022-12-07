@@ -2,8 +2,9 @@ package service
 
 import (
 	"awesomeProject/skillbox/StatusPage/helpers"
-	"fmt"
 	"strings"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type ResultT struct {
@@ -25,7 +26,6 @@ type ResultSetT struct {
 func MakeResultT() ResultT {
 	r := ResultT{}
 	rst := GetResultData()
-	fmt.Println(rst)
 	b := true
 	if rst.MMS == nil || rst.SMS == nil || rst.Incidents == nil || rst.Support == nil || rst.VoiceCall == nil ||
 		rst.Email == nil /* || rst.Billing == nil */ {
@@ -66,7 +66,9 @@ func sortSMSOne() [][]SMSData {
 	smsCountry := sortCountrySMS(newSmsSlice)
 	var sliceSliceSms [][]SMSData
 	sliceSliceSms = append(sliceSliceSms, smsProvider, smsCountry)
+	log.Info("Проведена сортировка sms")
 	return sliceSliceSms
+
 }
 
 func sortProviderSMS(st []SMSData) []SMSData {
@@ -125,9 +127,7 @@ func sortMMSOne() [][]MMSData {
 	mmsCountry := sortCountryMMS(newSmsSlice)
 	var sliceSliceMms [][]MMSData
 	sliceSliceMms = append(sliceSliceMms, mmsProvider, mmsCountry)
-	/*for _, sm := range sliceSliceMms {
-		fmt.Println(sm)
-	}*/
+	log.Info("Проведена сортировка mms")
 	return sliceSliceMms
 }
 
@@ -179,13 +179,8 @@ func sortEmail() map[string][][]EmailData {
 	emailSlice := Email()
 	countryEmail := sortCountryEmail(emailSlice)
 	m := makeMapEmail(countryEmail)
-	/*for s, data := range m {
-		fmt.Println(s, data)
-	}*/
 	emailMap := minAndMaxValueMap(m)
-	/*for s, i := range emailMap {
-		fmt.Println(s, i)
-	}*/
+	log.Info("Проведена сортировка mms")
 	return emailMap
 
 }
@@ -225,7 +220,6 @@ func makeMapEmail(e []EmailData) map[string][]EmailData {
 			}
 		}
 	}
-	fmt.Println("сделана сохранение в map по странам")
 	return m
 }
 func minAndMaxValue(st []EmailData) [][]EmailData {
@@ -252,18 +246,16 @@ func minAndMaxValueMap(m map[string][]EmailData) map[string][][]EmailData {
 		x := minAndMaxValue(data)
 		desiredMap[s] = x
 	}
-	//fmt.Println("проведена сортировка по минимальным и максимальным значениям скорости провайдеров")
 	return desiredMap
 }
 
 func sortSupport() []int {
 	sup := Support()
-	fmt.Println(sup)
 	sumTic := sumTickets(sup)
 	loading := load(sumTic)
 	waitTime := waitingTime(sumTic)
 	sort := []int{loading, waitTime}
-	//fmt.Println(sort)
+	log.Info("Проведена сортировка support")
 	return sort
 }
 
@@ -293,7 +285,7 @@ func waitingTime(i int) int {
 func sortIncident() []IncidentData {
 	inc := Incident()
 	incSort := sortingIncident(inc)
-	//fmt.Println(incSort)
+	log.Info("Проведена сортировка incident")
 	return incSort
 }
 
@@ -309,6 +301,6 @@ func sortingIncident(st []IncidentData) []IncidentData {
 			}
 		}
 	}
-	//fmt.Println(" проведена сортировка incident по странам")
+
 	return s
 }

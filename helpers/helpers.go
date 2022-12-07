@@ -3,12 +3,13 @@ package helpers
 import (
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"net/http/httputil"
 	"os"
 	"strconv"
 	"strings"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func CountryString() string {
@@ -298,7 +299,9 @@ func ExaminationLen(s []string, k int) []string {
 			i--
 		}
 	}
+	log.Info("убрали данные, не соответствующие длине")
 	return s
+
 }
 
 func ExaminationProvaiders(s []string, p []string, g int) []string {
@@ -310,7 +313,9 @@ func ExaminationProvaiders(s []string, p []string, g int) []string {
 			i--
 		}
 	}
+	log.Info("убрали данные, не соответствующие названиям провайдеров")
 	return s
+
 }
 
 func CheckProviders(s string, p []string) bool {
@@ -336,6 +341,7 @@ func ExaminationCountry(s []string, p string) []string {
 		}
 
 	}
+	log.Info("убрали данные, не соответствующие названию стран")
 	return s
 }
 
@@ -359,7 +365,7 @@ func StringToSliceString(s string) []string {
 	s2 = strings.Replace(s2, "[", "", -1)
 	s = strings.Replace(s2, "},{", "};{", -1)
 	str := strings.Split(s, ";")
-	log.Println("убрали лишние скобки, разбили строку на массив строк")
+	log.Info("убрали лишние скобки, разбили строку на массив строк")
 	return str
 }
 
@@ -377,5 +383,6 @@ func UrlToString(url string) (string, error) {
 		log.Fatalln(err)
 	}
 	s = string(bufer)
+	log.Infof("получили данные с url %s", url)
 	return s, nil
 }

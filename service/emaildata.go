@@ -3,6 +3,8 @@ package service
 import (
 	"awesomeProject/skillbox/StatusPage/helpers"
 	"strings"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type EmailData struct {
@@ -20,15 +22,16 @@ func NewEmailData(str []string) *EmailData {
 }
 
 func Email() []EmailData {
+	log.Info("Получаем данные email")
 
 	providers := []string{"Orange", "Comcast", "AOL", "Gmail", "Yahoo", "Hotmail", "MSN", "Live", "RediffMail", "GMX",
 		"Protonmail", "Yandex", "Mail.ru"}
 	countriesString := helpers.CountryString()
 
 	var storageED []EmailData
-	smsDataCSV := "../StatusPage//simulator/email.data"
-	smsDataString := helpers.CsvInString(smsDataCSV)
-	splitStrings := strings.Split(smsDataString, "\n")
+	emailDataCSV := "./simulator/email.data"
+	emailDataString := helpers.CsvInString(emailDataCSV)
+	splitStrings := strings.Split(emailDataString, "\n")
 	splitStrings = helpers.ExaminationLen(splitStrings, 3)
 	splitStrings = helpers.ExaminationProvaiders(splitStrings, providers, 1)
 	splitStrings = helpers.ExaminationCountry(splitStrings, countriesString)
@@ -38,7 +41,7 @@ func Email() []EmailData {
 		l := NewEmailData(s)
 		storageED = append(storageED, *l)
 	}
+	log.Info("Получены данные email")
 	return storageED
-	//fmt.Println(storageED)
 
 }

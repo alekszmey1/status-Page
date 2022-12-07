@@ -3,6 +3,8 @@ package service
 import (
 	"awesomeProject/skillbox/StatusPage/helpers"
 	"strings"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type VoiceCallData struct {
@@ -31,12 +33,12 @@ func NewVoiceData(str []string) *VoiceCallData {
 }
 
 func VoiceCall() []VoiceCallData {
-
+	log.Info("Получаем данные voice_call")
 	providers := []string{"TransparentCalls", "E-Voice", "JustPhone"}
 	countriesString := helpers.CountryString()
 
 	var storageVoice []VoiceCallData
-	smsDataCSV := "../StatusPage//simulator/voice.data"
+	smsDataCSV := "./simulator/voice.data"
 	smsDataString := helpers.CsvInString(smsDataCSV)
 	splitStrings := strings.Split(smsDataString, "\n")
 	splitStrings = helpers.ExaminationLen(splitStrings, 8)
@@ -48,6 +50,7 @@ func VoiceCall() []VoiceCallData {
 		l := NewVoiceData(s)
 		storageVoice = append(storageVoice, *l)
 	}
+	log.Info("Получены данные voice_call")
 	return storageVoice
 
 }

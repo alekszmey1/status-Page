@@ -4,6 +4,8 @@ import (
 	"awesomeProject/skillbox/StatusPage/helpers"
 	"math"
 	"strings"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type BillingData struct {
@@ -27,7 +29,7 @@ func NewBillingData(b []bool) BillingData {
 }
 
 func Billing() BillingData {
-	billingDataCSV := "../StatusPage/simulator/billing.data"
+	billingDataCSV := "./simulator/billing.data"
 	s := helpers.CsvInString(billingDataCSV)
 	rns := strings.Split(s, "")
 	for i, j := 0, len(rns)-1; i < j; i, j = i+1, j-1 {
@@ -44,8 +46,8 @@ func Billing() BillingData {
 			b = append(b, false)
 		}
 	}
-	//fmt.Println(k)
+
 	l := NewBillingData(b)
-	//fmt.Println(l)
+	log.Info("Получены данные billing")
 	return l
 }

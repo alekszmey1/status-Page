@@ -3,6 +3,8 @@ package service
 import (
 	"awesomeProject/skillbox/StatusPage/helpers"
 	"encoding/json"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type IncidentData struct {
@@ -11,10 +13,10 @@ type IncidentData struct {
 }
 
 func Incident() []IncidentData {
+	log.Info("Получаем данные incident")
 	url := "http://127.0.0.1:8383/accendent"
-	//log.Println("открыли url " + url)
 	incidentStorage, _ := createStorageIncident(url)
-	//fmt.Println(incidentStorage)
+	log.Info("Получены данные incident")
 	return incidentStorage
 }
 
@@ -32,14 +34,14 @@ func makeStorageIncident(str []string) []*IncidentData {
 		mms := createIncident([]byte(s2))
 		SD = append(SD, mms)
 	}
-	//log.Println("заанмаршали каждое значение массива строк, создали срез структур формата mmsdata")
+	log.Info("заанмаршали каждое значение массива строк, создали срез структур формата incident")
 	return SD
 }
 
 func createIncident(b []byte) *IncidentData {
 	var inc *IncidentData
 	if err := json.Unmarshal(b, &inc); err != nil {
-		//log.Printf("возникла ошибка в анмаршале %s ", err)
+		log.Printf("возникла ошибка в анмаршале %s ", err)
 		inc = nil
 	}
 	return inc
@@ -54,6 +56,6 @@ func cleanSliceIncident(m []*IncidentData) []IncidentData {
 
 		}
 	}
-	//log.Println("почистили слайс support от пустых срезов")
+	log.Info("почистили слайс support от пустых срезов")
 	return n
 }

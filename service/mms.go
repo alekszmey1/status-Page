@@ -3,6 +3,8 @@ package service
 import (
 	"awesomeProject/skillbox/StatusPage/helpers"
 	"encoding/json"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type MMSData struct {
@@ -13,10 +15,10 @@ type MMSData struct {
 }
 
 func MmsData() []*MMSData {
+	log.Info("Получаем данные mms")
 	url := "http://127.0.0.1:8383/mms"
-	//log.Println("открыли url " + url)
 	mmsStorage, _ := createStorageMMS(url)
-	//log.Println(mmsStorage)
+	log.Info("Получены данные mms")
 	return mmsStorage
 
 }
@@ -26,10 +28,6 @@ func createStorageMMS(url string) ([]*MMSData, error) {
 	stringContentSlice := helpers.StringToSliceString(stringContent)
 	m := makeStorageMMS(stringContentSlice)
 	c := cleanSliceMMS(m)
-	/*var st []*MMSData
-	for _, data := range c {
-		st = append(st, data)
-	}*/
 	return c, err
 }
 func makeStorageMMS(str []string) []*MMSData {
@@ -38,14 +36,14 @@ func makeStorageMMS(str []string) []*MMSData {
 		mms := createMMS([]byte(s2))
 		MD = append(MD, mms)
 	}
-	//log.Println("заанмаршали каждое значение массива строк, создали срез структур формата mmsdata")
+	log.Info("заанмаршали каждое значение массива строк, создали срез структур формата mmsdata")
 	return MD
 }
 
 func createMMS(b []byte) *MMSData {
 	var mms *MMSData
 	if err := json.Unmarshal(b, &mms); err != nil {
-		//log.Printf("возникла ошибка в анмаршале %s ", err)
+		log.Printf("возникла ошибка в анмаршале %s ", err)
 		mms = nil
 	}
 	return mms
@@ -64,6 +62,6 @@ func cleanSliceMMS(m []*MMSData) []*MMSData {
 			}
 		}
 	}
-	//log.Println("почистили слайс mmsdata от пустых срезов, и проверили на соответствие странам и провайдерам")
+	log.Info("почистили слайс mmsdata от пустых срезов, и проверили на соответствие странам и провайдерам")
 	return n
 }

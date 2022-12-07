@@ -3,7 +3,8 @@ package service
 import (
 	"awesomeProject/skillbox/StatusPage/helpers"
 	"encoding/json"
-	"log"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type SupportData struct {
@@ -12,9 +13,10 @@ type SupportData struct {
 }
 
 func Support() []SupportData {
-	log.Println("создан  сервер")
+	log.Info("Получаем данные support")
 	url := "http://127.0.0.1:8383/support"
 	st, _ := createStorageSupport(url)
+	log.Info("Получены данные support")
 	return st
 }
 
@@ -31,14 +33,14 @@ func makeStorageSupport(str []string) []*SupportData {
 		mms := createSupport([]byte(s2))
 		SD = append(SD, mms)
 	}
-	//log.Println("заанмаршали каждое значение массива строк, создали срез структур формата mmsdata")
+	log.Info("заанмаршали каждое значение массива строк, создали срез структур формата support")
 	return SD
 }
 
 func createSupport(b []byte) *SupportData {
 	var sup *SupportData
 	if err := json.Unmarshal(b, &sup); err != nil {
-		//log.Printf("возникла ошибка в анмаршале %s ", err)
+		log.Printf("возникла ошибка в анмаршале %s ", err)
 		sup = nil
 	}
 	return sup
@@ -50,6 +52,6 @@ func cleanSliceSupport(m []*SupportData) []SupportData {
 			n = append(n, *val)
 		}
 	}
-	//log.Println("почистили слайс support от пустых срезов")
+	log.Info("почистили слайс support от пустых срезов")
 	return n
 }
