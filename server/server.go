@@ -15,7 +15,7 @@ func App() {
 		Addr:    "127.0.0.1:8282",
 		Handler: r,
 	}
-	r.HandleFunc("/", handleConnection)
+	r.HandleFunc("/api", handleConnection)
 	http.ListenAndServe(mux.Addr, r)
 
 }

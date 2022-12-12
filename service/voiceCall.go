@@ -32,14 +32,18 @@ func NewVoiceData(str []string) *VoiceCallData {
 	return &vd
 }
 
-func VoiceCall() []VoiceCallData {
+func VoiceCall() ([]VoiceCallData, error) {
 	log.Info("Получаем данные voice_call")
 	providers := []string{"TransparentCalls", "E-Voice", "JustPhone"}
 	countriesString := helpers.CountryString()
 
 	var storageVoice []VoiceCallData
 	smsDataCSV := "./simulator/voice.data"
-	smsDataString := helpers.CsvInString(smsDataCSV)
+	smsDataString, err := helpers.CsvInString(smsDataCSV)
+	if err != nil {
+		log.Fatalln(err)
+		return storageVoice, err
+	}
 	splitStrings := strings.Split(smsDataString, "\n")
 	splitStrings = helpers.ExaminationLen(splitStrings, 8)
 	splitStrings = helpers.ExaminationProvaiders(splitStrings, providers, 3)
@@ -51,6 +55,6 @@ func VoiceCall() []VoiceCallData {
 		storageVoice = append(storageVoice, *l)
 	}
 	log.Info("Получены данные voice_call")
-	return storageVoice
+	return storageVoice, err
 
 }

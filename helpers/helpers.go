@@ -277,18 +277,18 @@ func CountryMap() map[string]string {
 	return m
 }
 
-func CsvInString(csv string) string {
+func CsvInString(csv string) (string, error) {
 	file, err := os.Open(csv)
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 	defer file.Close()
 	bytes, err := io.ReadAll(file)
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 	s := string(bytes)
-	return s
+	return s, err
 }
 
 func ExaminationLen(s []string, k int) []string {

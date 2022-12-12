@@ -25,37 +25,58 @@ type ResultSetT struct {
 
 func MakeResultT() ResultT {
 	r := ResultT{}
-	rst := GetResultData()
-	b := true
-	if rst.MMS == nil || rst.SMS == nil || rst.Incidents == nil || rst.Support == nil || rst.VoiceCall == nil ||
-		rst.Email == nil /* || rst.Billing == nil */ {
-		b = false
-	}
-	if b == true {
-		r.Data = rst
-
-	} else {
+	rst, err := GetResultData()
+	if err != nil {
+		r.Status = false
 		r.Error = "Error on collect data"
+		log.Fatalln(err)
+		return r
 	}
-	r.Status = b
+	r.Status = true
+	r.Data = rst
 	return r
 }
 
-func GetResultData() ResultSetT {
-	r := ResultSetT{
-		SMS:       sortSMSOne(),
+func GetResultData() (ResultSetT, error) {
+	r := ResultSetT{}
+	sms, err := sortSMSOne()
+	if err != nil {
+		log.Fatalln(err)
+		return r, err
+	}
+	bil, err := Billing()
+	if err != nil {
+		log.Fatalln(err)
+		return r, err
+	}
+	mail, err := sortEmail()
+	if err != nil {
+		log.Fatalln(err)
+		return r, err
+	}
+	voice, err := VoiceCall()
+	if err != nil {
+		log.Fatalln(err)
+		return r, err
+	}
+	r = ResultSetT{
+		SMS:       sms,
 		MMS:       sortMMSOne(),
-		VoiceCall: VoiceCall(),
-		Email:     sortEmail(),
-		Billing:   Billing(),
+		VoiceCall: voice,
+		Email:     mail,
+		Billing:   bil,
 		Support:   sortSupport(),
 		Incidents: sortIncident(),
 	}
-	return r
+	return r, err
 }
 
-func sortSMSOne() [][]SMSData {
-	smsSlice := SmsData()
+func sortSMSOne() ([][]SMSData, error) {
+	smsSlice, err := SmsData()
+	if err != nil {
+		log.Fatalln(err)
+		return nil, err
+	}
 	cm := helpers.CountryMap()
 	sms2 := sliceCountryReplaceSMS(smsSlice, cm)
 	var newSmsSlice []SMSData
@@ -67,7 +88,7 @@ func sortSMSOne() [][]SMSData {
 	var sliceSliceSms [][]SMSData
 	sliceSliceSms = append(sliceSliceSms, smsProvider, smsCountry)
 	log.Info("Проведена сортировка sms")
-	return sliceSliceSms
+	return sliceSliceSms, err
 
 }
 
@@ -175,13 +196,18 @@ func sliceCountryReplaceMMS(s []*MMSData, m map[string]string) []*MMSData {
 	return s
 }
 
-func sortEmail() map[string][][]EmailData {
-	emailSlice := Email()
+func sortEmail() (map[string][][]EmailData, error) {
+	emailMap := make(map[string][][]EmailData)
+	emailSlice, err := Email()
+	if err != nil {
+		log.Fatalln(err)
+		return emailMap, err
+	}
 	countryEmail := sortCountryEmail(emailSlice)
 	m := makeMapEmail(countryEmail)
-	emailMap := minAndMaxValueMap(m)
+	emailMap = minAndMaxValueMap(m)
 	log.Info("Проведена сортировка mms")
-	return emailMap
+	return emailMap, err
 
 }
 

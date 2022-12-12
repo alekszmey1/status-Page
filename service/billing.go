@@ -28,9 +28,14 @@ func NewBillingData(b []bool) BillingData {
 	return bd
 }
 
-func Billing() BillingData {
+func Billing() (BillingData, error) {
+	l := BillingData{}
 	billingDataCSV := "./simulator/billing.data"
-	s := helpers.CsvInString(billingDataCSV)
+	s, err := helpers.CsvInString(billingDataCSV)
+	if err != nil {
+		log.Fatalln(err)
+		return l, err
+	}
 	rns := strings.Split(s, "")
 	for i, j := 0, len(rns)-1; i < j; i, j = i+1, j-1 {
 		rns[i], rns[j] = rns[j], rns[i]
@@ -47,7 +52,7 @@ func Billing() BillingData {
 		}
 	}
 
-	l := NewBillingData(b)
+	l = NewBillingData(b)
 	log.Info("Получены данные billing")
-	return l
+	return l, err
 }

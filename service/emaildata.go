@@ -21,16 +21,18 @@ func NewEmailData(str []string) *EmailData {
 	return &ed
 }
 
-func Email() []EmailData {
+func Email() ([]EmailData, error) {
 	log.Info("Получаем данные email")
-
+	var storageED []EmailData
 	providers := []string{"Orange", "Comcast", "AOL", "Gmail", "Yahoo", "Hotmail", "MSN", "Live", "RediffMail", "GMX",
 		"Protonmail", "Yandex", "Mail.ru"}
 	countriesString := helpers.CountryString()
-
-	var storageED []EmailData
 	emailDataCSV := "./simulator/email.data"
-	emailDataString := helpers.CsvInString(emailDataCSV)
+	emailDataString, err := helpers.CsvInString(emailDataCSV)
+	if err != nil {
+		log.Fatalln(err)
+		return storageED, err
+	}
 	splitStrings := strings.Split(emailDataString, "\n")
 	splitStrings = helpers.ExaminationLen(splitStrings, 3)
 	splitStrings = helpers.ExaminationProvaiders(splitStrings, providers, 1)
@@ -42,6 +44,6 @@ func Email() []EmailData {
 		storageED = append(storageED, *l)
 	}
 	log.Info("Получены данные email")
-	return storageED
+	return storageED, err
 
 }

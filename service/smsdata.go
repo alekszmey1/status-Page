@@ -27,13 +27,17 @@ type StorageSD struct {
 	storageSMSData map[int]*SMSData
 }
 
-func SmsData() []*SMSData {
+func SmsData() ([]*SMSData, error) {
 	log.Info("Получаем данные sms")
 	var storageSMS []*SMSData
 	providers := []string{"Topol", "Rond", "Kildy"}
 	countriesString := helpers.CountryString()
 	smsDataCSV := "./simulator/sms.data"
-	smsDataString := helpers.CsvInString(smsDataCSV)
+	smsDataString, err := helpers.CsvInString(smsDataCSV)
+	if err != nil {
+		log.Fatalln(err)
+		return storageSMS, err
+	}
 	splitStrings := strings.Split(smsDataString, "\n")
 	splitStrings = helpers.ExaminationLen(splitStrings, 4)
 	splitStrings = helpers.ExaminationProvaiders(splitStrings, providers, 3)
@@ -44,5 +48,5 @@ func SmsData() []*SMSData {
 		storageSMS = append(storageSMS, l)
 	}
 	log.Info("Получены данные sms")
-	return storageSMS
+	return storageSMS, err
 }
