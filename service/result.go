@@ -59,14 +59,29 @@ func GetResultData() (ResultSetT, error) {
 		log.Fatalln(err)
 		return r, err
 	}
+	inc, err := sortIncident()
+	if err != nil {
+		log.Fatalln(err)
+		return r, err
+	}
+	mms, err := sortMMSOne()
+	if err != nil {
+		log.Fatalln(err)
+		return r, err
+	}
+	sup, err := sortSupport()
+	if err != nil {
+		log.Fatalln(err)
+		return r, err
+	}
 	r = ResultSetT{
 		SMS:       sms,
-		MMS:       sortMMSOne(),
+		MMS:       mms,
 		VoiceCall: voice,
 		Email:     mail,
 		Billing:   bil,
-		Support:   sortSupport(),
-		Incidents: sortIncident(),
+		Support:   sup,
+		Incidents: inc,
 	}
 	return r, err
 }
@@ -136,8 +151,13 @@ func sliceCountryReplaceSMS(s []*SMSData, m map[string]string) []*SMSData {
 	return s
 }
 
-func sortMMSOne() [][]MMSData {
-	smsSlice := MmsData()
+func sortMMSOne() ([][]MMSData, error) {
+	var sliceSliceMms [][]MMSData
+	smsSlice, err := MmsData()
+	if err != nil {
+		log.Fatalln(err)
+		return sliceSliceMms, err
+	}
 	cm := helpers.CountryMap()
 	sms2 := sliceCountryReplaceMMS(smsSlice, cm)
 	var newSmsSlice []MMSData
@@ -146,10 +166,10 @@ func sortMMSOne() [][]MMSData {
 	}
 	mmsProvider := sortProviderMMS(newSmsSlice)
 	mmsCountry := sortCountryMMS(newSmsSlice)
-	var sliceSliceMms [][]MMSData
+
 	sliceSliceMms = append(sliceSliceMms, mmsProvider, mmsCountry)
 	log.Info("Проведена сортировка mms")
-	return sliceSliceMms
+	return sliceSliceMms, err
 }
 
 func sortProviderMMS(st []MMSData) []MMSData {
@@ -275,14 +295,19 @@ func minAndMaxValueMap(m map[string][]EmailData) map[string][][]EmailData {
 	return desiredMap
 }
 
-func sortSupport() []int {
-	sup := Support()
+func sortSupport() ([]int, error) {
+	var sort []int
+	sup, err := Support()
+	if err != nil {
+		log.Fatalln(err)
+		return sort, err
+	}
 	sumTic := sumTickets(sup)
 	loading := load(sumTic)
 	waitTime := waitingTime(sumTic)
-	sort := []int{loading, waitTime}
+	sort = []int{loading, waitTime}
 	log.Info("Проведена сортировка support")
-	return sort
+	return sort, err
 }
 
 func load(i int) int {
@@ -308,11 +333,15 @@ func waitingTime(i int) int {
 	return x
 }
 
-func sortIncident() []IncidentData {
-	inc := Incident()
+func sortIncident() ([]IncidentData, error) {
+	inc, err := Incident()
+	if err != nil {
+		log.Fatalln(err)
+		return inc, err
+	}
 	incSort := sortingIncident(inc)
 	log.Info("Проведена сортировка incident")
-	return incSort
+	return incSort, err
 }
 
 func sortingIncident(st []IncidentData) []IncidentData {

@@ -14,12 +14,12 @@ type MMSData struct {
 	ResponseTime string `json:"response_time"`
 }
 
-func MmsData() []*MMSData {
+func MmsData() ([]*MMSData, error) {
 	log.Info("Получаем данные mms")
 	url := "http://127.0.0.1:8383/mms"
-	mmsStorage, _ := createStorageMMS(url)
+	mmsStorage, err := createStorageMMS(url)
 	log.Info("Получены данные mms")
-	return mmsStorage
+	return mmsStorage, err
 
 }
 

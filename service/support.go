@@ -12,12 +12,12 @@ type SupportData struct {
 	ActiveTickets int    `json:"active_tickets"'`
 }
 
-func Support() []SupportData {
+func Support() ([]SupportData, error) {
 	log.Info("Получаем данные support")
 	url := "http://127.0.0.1:8383/support"
-	st, _ := createStorageSupport(url)
+	st, err := createStorageSupport(url)
 	log.Info("Получены данные support")
-	return st
+	return st, err
 }
 
 func createStorageSupport(url string) ([]SupportData, error) {

@@ -12,16 +12,21 @@ type IncidentData struct {
 	Status string `json:"status"'`
 }
 
-func Incident() []IncidentData {
+func Incident() ([]IncidentData, error) {
 	log.Info("Получаем данные incident")
 	url := "http://127.0.0.1:8383/accendent"
-	incidentStorage, _ := createStorageIncident(url)
+	incidentStorage, err := createStorageIncident(url)
+	if err != nil {
+		log.Fatalln(err)
+		return incidentStorage, err
+	}
 	log.Info("Получены данные incident")
-	return incidentStorage
+	return incidentStorage, err
 }
 
 func createStorageIncident(url string) ([]IncidentData, error) {
 	stringContent, err := helpers.UrlToString(url)
+
 	stringContentSlice := helpers.StringToSliceString(stringContent)
 	m := makeStorageIncident(stringContentSlice)
 	cl := cleanSliceIncident(m)
