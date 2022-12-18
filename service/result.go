@@ -53,25 +53,27 @@ func GetResultData() (ResultSetT, error) {
 	r := ResultSetT{}
 	smsChan := make(chan smsdata)
 	go sortSMSOne(smsChan)
-	sms, err := outChanSms(smsChan)
-	if err != nil {
-		log.Fatalln(err)
-		return r, err
-	}
 	mmsChan := make(chan mmsdata)
 	go sortMMSOne(mmsChan)
-	mms, err := outChanMms(mmsChan)
-	if err != nil {
-		log.Fatalln(err)
-		return r, err
-	}
 	emailChan := make(chan emaildata)
 	go sortEmail(emailChan)
 
-	mail, err := outChanEmail(emailChan)
-	if err != nil {
-		log.Fatalln(err)
-		return r, err
+	sd := <-smsChan
+	if sd.err != nil {
+		log.Fatalln(sd.err)
+		return r, sd.err
+	}
+
+	mms := <-mmsChan
+	if mms.err != nil {
+		log.Fatalln(mms.err)
+		return r, mms.err
+	}
+
+	mail := <-emailChan
+	if mail.err != nil {
+		log.Fatalln(mail.err)
+		return r, mail.err
 	}
 	bil, err := Billing()
 	if err != nil {
@@ -97,10 +99,10 @@ func GetResultData() (ResultSetT, error) {
 	}
 
 	r = ResultSetT{
-		SMS:       sms,
-		MMS:       mms,
+		SMS:       sd.sms,
+		MMS:       mms.mms,
 		VoiceCall: voice,
-		Email:     mail,
+		Email:     mail.email,
 		Billing:   bil,
 		Support:   sup,
 		Incidents: inc,
