@@ -2,7 +2,9 @@ package service
 
 import (
 	"awesomeProject/skillbox/StatusPage/helpers"
+	"fmt"
 	"strings"
+	"sync"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -22,17 +24,33 @@ type ResultSetT struct {
 	Incidents []IncidentData           `json:"incident"`
 }
 
-type smsdata struct {
+type smsData struct {
 	sms [][]SMSData
 	err error
 }
-type mmsdata struct {
+type mmsData struct {
 	mms [][]MMSData
 	err error
 }
-type emaildata struct {
+type emailData struct {
 	email map[string][][]EmailData
 	err   error
+}
+type support struct {
+	sup []int
+	err error
+}
+type incidData struct {
+	inc []IncidentData
+	err error
+}
+
+type chanals struct {
+	smsChan     chan smsData
+	mmsChan     chan mmsData
+	emailChan   chan emailData
+	supportChan chan support
+	incident    chan incidData
 }
 
 func MakeResultT() ResultT {
@@ -49,75 +67,100 @@ func MakeResultT() ResultT {
 	return r
 }
 
+func getChanals() chanals {
+	var wg sync.WaitGroup
+	wg.Add(1)
+	var c chanals
+	go sortSMSOne(c.smsChan, &wg)
+	//go sortMMSOne(c.mmsChan, &wg)
+	//go sortEmail(c.emailChan, &wg)
+	//go sortSupport(c.supportChan, &wg)
+	//go sortIncident(c.incident, &wg)
+	log.Info("ожидаем отработки горутин")
+	wg.Wait()
+	fmt.Println(c.smsChan)
+	return c
+}
 func GetResultData() (ResultSetT, error) {
+	c := getChanals()
+	log.Info("горутины отработали")
+	fmt.Println(c.smsChan)
 	r := ResultSetT{}
-	smsChan := make(chan smsdata)
-	go sortSMSOne(smsChan)
-	mmsChan := make(chan mmsdata)
-	go sortMMSOne(mmsChan)
-	emailChan := make(chan emaildata)
-	go sortEmail(emailChan)
-
-	sd := <-smsChan
+	fmt.Println(1)
+	var sd smsData
+	log.Info("считываем данны с канала")
+	sd = <-c.smsChan
+	fmt.Println(c.smsChan)
+	log.Info("данные считаны с канала")
+	fmt.Println(sd)
 	if sd.err != nil {
 		log.Fatalln(sd.err)
 		return r, sd.err
 	}
-
-	mms := <-mmsChan
+	fmt.Println(2)
+	mms := <-c.mmsChan
 	if mms.err != nil {
 		log.Fatalln(mms.err)
 		return r, mms.err
 	}
-
-	mail := <-emailChan
+	fmt.Println(3)
+	mail := <-c.emailChan
 	if mail.err != nil {
 		log.Fatalln(mail.err)
 		return r, mail.err
 	}
+	fmt.Println(4)
 	bil, err := Billing()
 	if err != nil {
 		log.Fatalln(err)
 		return r, err
 	}
-
+	fmt.Println(5)
 	voice, err := VoiceCall()
 	if err != nil {
 		log.Fatalln(err)
 		return r, err
 	}
-	inc, err := sortIncident()
-	if err != nil {
-		log.Fatalln(err)
-		return r, err
+	fmt.Println(6)
+	inc := <-c.incident
+	if inc.err != nil {
+		log.Fatalln(inc.err)
+		return r, inc.err
 	}
-
-	sup, err := sortSupport()
-	if err != nil {
-		log.Fatalln(err)
-		return r, err
+	fmt.Println(7)
+	sup := <-c.supportChan
+	if sup.err != nil {
+		log.Fatalln(sup.err)
+		return r, sup.err
 	}
-
+	fmt.Println("дошли до сюда")
 	r = ResultSetT{
 		SMS:       sd.sms,
 		MMS:       mms.mms,
 		VoiceCall: voice,
 		Email:     mail.email,
 		Billing:   bil,
-		Support:   sup,
-		Incidents: inc,
+		Support:   sup.sup,
+		Incidents: inc.inc,
 	}
+	log.Info("заполнен r = Resultset")
+	fmt.Println(r)
 	return r, err
 }
 
-func sortSMSOne(c chan smsdata) chan smsdata {
+func sortSMSOne(c chan smsData, wg *sync.WaitGroup) chan smsData {
+	//defer wg.Done()
 	log.Info("запущена сортировка смс")
-	var sms smsdata
+	var sms smsData
 	smsSlice, err := SmsData()
 	if err != nil {
 		log.Fatalln(err)
 		sms.err = err
+		wg.Done()
+		log.Info("сработал wg.Done sms err")
+		fmt.Println(sms)
 		c <- sms
+		return c
 	}
 	cm := helpers.CountryMap()
 	sms2 := sliceCountryReplaceSMS(smsSlice, cm)
@@ -129,15 +172,12 @@ func sortSMSOne(c chan smsdata) chan smsdata {
 	smsCountry := sortCountrySMS(newSmsSlice)
 	sms.sms = append(sms.sms, smsProvider, smsCountry)
 	log.Info("Проведена сортировка sms")
+	wg.Done()
+	log.Info("сработал wg.Done sms")
 	c <- sms
 	return c
 }
 
-func outChanSms(c chan smsdata) ([][]SMSData, error) {
-	var s smsdata
-	s = <-c
-	return s.sms, s.err
-}
 func sortProviderSMS(st []SMSData) []SMSData {
 	s := make([]SMSData, len(st))
 	copy(s, st[:])
@@ -182,13 +222,16 @@ func sliceCountryReplaceSMS(s []*SMSData, m map[string]string) []*SMSData {
 	return s
 }
 
-func sortMMSOne(c chan mmsdata) chan mmsdata {
+func sortMMSOne(c chan mmsData, wg *sync.WaitGroup) chan mmsData {
+	//defer wg.Done()
 	log.Info("запущена сортировка ммс")
-	var sliceSliceMms mmsdata
+	var sliceSliceMms mmsData
 	smsSlice, err := MmsData()
 	if err != nil {
 		log.Fatalln(err)
 		sliceSliceMms.err = err
+		wg.Done()
+		log.Info("сработал wg.Done mms err")
 		c <- sliceSliceMms
 		return c
 	}
@@ -202,15 +245,12 @@ func sortMMSOne(c chan mmsdata) chan mmsdata {
 	mmsCountry := sortCountryMMS(newSmsSlice)
 	sliceSliceMms.mms = append(sliceSliceMms.mms, mmsProvider, mmsCountry)
 	log.Info("Проведена сортировка mms")
+	wg.Done()
+	log.Info("сработал wg.Done mms")
 	c <- sliceSliceMms
 	return c
 }
 
-func outChanMms(c chan mmsdata) ([][]MMSData, error) {
-	var s mmsdata
-	s = <-c
-	return s.mms, s.err
-}
 func sortProviderMMS(st []MMSData) []MMSData {
 	s := make([]MMSData, len(st))
 	copy(s, st[:])
@@ -255,28 +295,29 @@ func sliceCountryReplaceMMS(s []*MMSData, m map[string]string) []*MMSData {
 	return s
 }
 
-func sortEmail(c chan emaildata) chan emaildata {
-	emailMap := emaildata{}
+func sortEmail(c chan emailData, wg *sync.WaitGroup) chan emailData {
+	//defer wg.Done()
+	emailMap := emailData{}
 	emailSlice, err := Email()
 	if err != nil {
 		log.Fatalln(err)
 		emailMap.err = err
+		wg.Done()
+		log.Info("сработал wg.Done email err")
 		c <- emailMap
 		return c
 	}
 	countryEmail := sortCountryEmail(emailSlice)
 	m := makeMapEmail(countryEmail)
 	emailMap.email = minAndMaxValueMap(m)
-	log.Info("Проведена сортировка mms")
+	log.Info("Проведена сортировка email")
+	wg.Done()
+	log.Info("сработал wg.Done email")
 	c <- emailMap
+
 	return c
 }
 
-func outChanEmail(c chan emaildata) (map[string][][]EmailData, error) {
-	var s emaildata
-	s = <-c
-	return s.email, s.err
-}
 func sortCountryEmail(st []EmailData) []EmailData {
 	s := make([]EmailData, len(st))
 	copy(s, st[:])
@@ -341,19 +382,27 @@ func minAndMaxValueMap(m map[string][]EmailData) map[string][][]EmailData {
 	return desiredMap
 }
 
-func sortSupport() ([]int, error) {
-	var sort []int
+func sortSupport(c chan support, wg *sync.WaitGroup) chan support {
+	//defer wg.Done()
+	var sort support
 	sup, err := Support()
 	if err != nil {
 		log.Fatalln(err)
-		return sort, err
+		sort.err = err
+		wg.Done()
+		log.Info("сработал wg.Done support err")
+		c <- sort
+		return c
 	}
 	sumTic := sumTickets(sup)
 	loading := load(sumTic)
 	waitTime := waitingTime(sumTic)
-	sort = []int{loading, waitTime}
+	sort.sup = []int{loading, waitTime}
 	log.Info("Проведена сортировка support")
-	return sort, err
+	wg.Done()
+	log.Info("сработал wg.Done support")
+	c <- sort
+	return c
 }
 
 func load(i int) int {
@@ -379,15 +428,24 @@ func waitingTime(i int) int {
 	return x
 }
 
-func sortIncident() ([]IncidentData, error) {
+func sortIncident(c chan incidData, wg *sync.WaitGroup) chan incidData {
+	//defer wg.Done()
+	var i incidData
 	inc, err := Incident()
 	if err != nil {
+		i.err = err
 		log.Fatalln(err)
-		return inc, err
+		wg.Done()
+		log.Info("сработал wg.Done incident err")
+		c <- i
+		return c
 	}
-	incSort := sortingIncident(inc)
+	i.inc = sortingIncident(inc)
 	log.Info("Проведена сортировка incident")
-	return incSort, err
+	wg.Done()
+	log.Info("сработал wg.Done incident")
+	c <- i
+	return c
 }
 
 func sortingIncident(st []IncidentData) []IncidentData {

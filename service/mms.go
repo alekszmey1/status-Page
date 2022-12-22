@@ -36,7 +36,7 @@ func makeStorageMMS(str []string) []*MMSData {
 		mms := createMMS([]byte(s2))
 		MD = append(MD, mms)
 	}
-	log.Info("заанмаршали каждое значение массива строк, создали срез структур формата mmsdata")
+	log.Info("заанмаршали каждое значение массива строк, создали срез структур формата mmsData")
 	return MD
 }
 
@@ -62,6 +62,6 @@ func cleanSliceMMS(m []*MMSData) []*MMSData {
 			}
 		}
 	}
-	log.Info("почистили слайс mmsdata от пустых срезов, и проверили на соответствие странам и провайдерам")
+	log.Info("почистили слайс mmsData от пустых срезов, и проверили на соответствие странам и провайдерам")
 	return n
 }
