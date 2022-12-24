@@ -17,8 +17,9 @@ func App() {
 	}
 	r.HandleFunc("/api", handleConnection)
 	http.ListenAndServe(mux.Addr, r)
-
+	r.Handle("/", http.FileServer(http.Dir("./web/")))
 }
+
 func handleConnection(w http.ResponseWriter, r *http.Request) {
 	m := service.MakeResultT()
 	data, err := json.Marshal(m)

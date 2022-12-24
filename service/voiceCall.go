@@ -28,33 +28,33 @@ func NewVoiceData(str []string) *VoiceCallData {
 	vd.TTFB = helpers.StringToint(str[5])
 	vd.VoicePurity = helpers.StringToint(str[6])
 	vd.MedianOfCallsTime = helpers.StringToint(str[7])
-
 	return &vd
 }
 
-func VoiceCall() ([]VoiceCallData, error) {
+func VoiceCall(c chan VoiceData) chan VoiceData {
 	log.Info("Получаем данные voice_call")
 	providers := []string{"TransparentCalls", "E-Voice", "JustPhone"}
 	countriesString := helpers.CountryString()
-
-	var storageVoice []VoiceCallData
+	var storageVoice VoiceData
 	smsDataCSV := "./simulator/voice.data"
 	smsDataString, err := helpers.CsvInString(smsDataCSV)
 	if err != nil {
 		log.Fatalln(err)
-		return storageVoice, err
+		storageVoice.err = err
+		c <- storageVoice
+		return c
 	}
 	splitStrings := strings.Split(smsDataString, "\n")
 	splitStrings = helpers.ExaminationLen(splitStrings, 8)
 	splitStrings = helpers.ExaminationProvaiders(splitStrings, providers, 3)
 	splitStrings = helpers.ExaminationCountry(splitStrings, countriesString)
-
 	for _, str := range splitStrings {
 		s := strings.Split(str, ";")
 		l := NewVoiceData(s)
-		storageVoice = append(storageVoice, *l)
+		storageVoice.voice = append(storageVoice.voice, *l)
 	}
 	log.Info("Получены данные voice_call")
-	return storageVoice, err
-
+	storageVoice.err = err
+	c <- storageVoice
+	return c
 }
