@@ -30,7 +30,7 @@ func Email() ([]EmailData, error) {
 	emailDataCSV := "./simulator/email.data"
 	emailDataString, err := helpers.CsvInString(emailDataCSV)
 	if err != nil {
-		log.Fatalln(err)
+		log.Info(err)
 		return storageED, err
 	}
 	splitStrings := strings.Split(emailDataString, "\n")

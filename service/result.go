@@ -22,6 +22,14 @@ type ResultSetT struct {
 	Incidents []IncidentData           `json:"incident"`
 }
 
+type VoiceData struct {
+	voice []VoiceCallData
+	err   error
+}
+type DataBilling struct {
+	bil BillingData
+	err error
+}
 type smsData struct {
 	sms [][]SMSData
 	err error
@@ -42,24 +50,6 @@ type incidData struct {
 	inc []IncidentData
 	err error
 }
-type VoiceData struct {
-	voice []VoiceCallData
-	err   error
-}
-type DataBilling struct {
-	bil BillingData
-	err error
-}
-
-type chanals struct {
-	smsChan     chan smsData
-	mmsChan     chan mmsData
-	emailChan   chan emailData
-	supportChan chan support
-	incident    chan incidData
-	voice       chan VoiceData
-	bil         chan DataBilling
-}
 
 func MakeResultT() ResultT {
 	r := ResultT{}
@@ -67,7 +57,6 @@ func MakeResultT() ResultT {
 	if err != nil {
 		r.Status = false
 		r.Error = "Error on collect data"
-		log.Fatalln(err)
 		return r
 	}
 	r.Status = true
@@ -75,70 +64,41 @@ func MakeResultT() ResultT {
 	return r
 }
 
-func getChanals() chanals {
-	сhanSms := make(chan smsData)
-	chanMms := make(chan mmsData)
-	сhanSup := make(chan support)
-	сhanIncident := make(chan incidData)
-	chanEmail := make(chan emailData)
-	voiceChan := make(chan VoiceData)
-	chanBil := make(chan DataBilling)
-	go sortSMSOne(сhanSms)
-	go sortMMSOne(chanMms)
-	go sortEmail(chanEmail)
-	go sortSupport(сhanSup)
-	go sortIncident(сhanIncident)
-	go VoiceCall(voiceChan)
-	go Billing(chanBil)
-	log.Info("ожидаем отработки горутин")
-	c := chanals{
-		incident:    сhanIncident,
-		smsChan:     сhanSms,
-		mmsChan:     chanMms,
-		emailChan:   chanEmail,
-		supportChan: сhanSup,
-		voice:       voiceChan,
-		bil:         chanBil,
-	}
-	return c
-}
 func GetResultData() (ResultSetT, error) {
-	c := getChanals()
-	log.Info("горутины отработали")
 	r := ResultSetT{}
-	sd := <-c.smsChan
+	sd := <-chanSms()
 	if sd.err != nil {
-		log.Fatalln(sd.err)
+		log.Info(sd.err)
 		return r, sd.err
 	}
-	mms := <-c.mmsChan
+	mms := <-chanMms()
 	if mms.err != nil {
-		log.Fatalln(mms.err)
+		log.Info(mms.err)
 		return r, mms.err
 	}
-	mail := <-c.emailChan
+	mail := <-chanEmail()
 	if mail.err != nil {
-		log.Fatalln(mail.err)
+		log.Info(mail.err)
 		return r, mail.err
 	}
-	bil := <-c.bil
+	bil := <-chanBil()
 	if bil.err != nil {
-		log.Fatalln(bil.err)
+		log.Info(bil.err)
 		return r, bil.err
 	}
-	voice := <-c.voice
+	voice := <-chanVoice()
 	if voice.err != nil {
-		log.Fatalln(voice.err)
+		log.Info(voice.err)
 		return r, voice.err
 	}
-	inc := <-c.incident
+	inc := <-chanInc()
 	if inc.err != nil {
-		log.Fatalln(inc.err)
+		log.Info(inc.err)
 		return r, inc.err
 	}
-	sup := <-c.supportChan
+	sup := <-chanSup()
 	if sup.err != nil {
-		log.Fatalln(sup.err)
+		log.Info(sup.err)
 		return r, sup.err
 	}
 	r = ResultSetT{
@@ -154,12 +114,48 @@ func GetResultData() (ResultSetT, error) {
 	return r, nil
 }
 
+func chanSms() chan smsData {
+	c := make(chan smsData)
+	go sortSMSOne(c)
+	return c
+}
+func chanMms() chan mmsData {
+	c := make(chan mmsData)
+	go sortMMSOne(c)
+	return c
+}
+func chanEmail() chan emailData {
+	c := make(chan emailData)
+	go sortEmail(c)
+	return c
+}
+func chanSup() chan support {
+	c := make(chan support)
+	go sortSupport(c)
+	return c
+}
+func chanInc() chan incidData {
+	c := make(chan incidData)
+	go sortIncident(c)
+	return c
+}
+func chanVoice() chan VoiceData {
+	c := make(chan VoiceData)
+	go VoiceCall(c)
+	return c
+}
+func chanBil() chan DataBilling {
+	c := make(chan DataBilling)
+	go Billing(c)
+	return c
+}
+
 func sortSMSOne(c chan smsData) chan smsData {
 	log.Info("запущена сортировка смс")
 	var sms smsData
 	smsSlice, err := SmsData()
 	if err != nil {
-		log.Fatalln(err)
+		log.Infof("ошибка сортировки смс %s", err)
 		sms.err = err
 		c <- sms
 		return c
@@ -227,7 +223,7 @@ func sortMMSOne(c chan mmsData) chan mmsData {
 	var sliceSliceMms mmsData
 	smsSlice, err := MmsData()
 	if err != nil {
-		log.Fatalln(err)
+		log.Infof("ошибка сортировки ммс %s", err)
 		sliceSliceMms.err = err
 		c <- sliceSliceMms
 		return c
@@ -294,7 +290,7 @@ func sortEmail(c chan emailData) chan emailData {
 	emailMap := emailData{}
 	emailSlice, err := Email()
 	if err != nil {
-		log.Fatalln(err)
+		log.Infof("ошибка сортировки email %s", err)
 		emailMap.err = err
 		c <- emailMap
 		return c
@@ -375,7 +371,7 @@ func sortSupport(c chan support) chan support {
 	var sort support
 	sup, err := Support()
 	if err != nil {
-		log.Fatalln(err)
+		log.Infof("ошибка сортировки support %s", err)
 		sort.err = err
 		c <- sort
 		return c
@@ -417,7 +413,7 @@ func sortIncident(c chan incidData) chan incidData {
 	inc, err := Incident()
 	if err != nil {
 		i.err = err
-		log.Fatalln(err)
+		log.Infof("ошибка сортировки incident %s", err)
 		c <- i
 		return c
 	}

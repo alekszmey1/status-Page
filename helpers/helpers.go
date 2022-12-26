@@ -1,7 +1,6 @@
 package helpers
 
 import (
-	"fmt"
 	"io"
 	"net/http"
 	"net/http/httputil"
@@ -280,12 +279,12 @@ func CountryMap() map[string]string {
 func CsvInString(csv string) (string, error) {
 	file, err := os.Open(csv)
 	if err != nil {
-		log.Fatalln(err)
+		log.Info(err)
 	}
 	defer file.Close()
 	bytes, err := io.ReadAll(file)
 	if err != nil {
-		log.Fatalln(err)
+		log.Info(err)
 	}
 	s := string(bytes)
 	return s, err
@@ -346,7 +345,6 @@ func ExaminationCountry(s []string, p string) []string {
 }
 
 func CheckCountry(s string, p string) bool {
-
 	l := strings.Contains(strings.ToUpper(s), strings.ToUpper(p))
 	return l
 }
@@ -373,14 +371,16 @@ func UrlToString(url string) (string, error) {
 	var s string
 	resp, err := http.Get(url)
 	if err != nil {
-		return s, fmt.Errorf("получение данных с url  %s выдало ошибку %s \n", url, err.Error())
+		log.Info("получение данных с url  %s выдало ошибку %s \n", url, err.Error())
+		return s, err
 	}
 	if resp.StatusCode != http.StatusOK {
-		return s, fmt.Errorf("support respose failed with status code %d : \n", resp.StatusCode)
+		log.Info("support respose failed with status code %d : \n", resp.StatusCode)
+		return s, err
 	}
 	bufer, err := httputil.DumpResponse(resp, true)
 	if err != nil {
-		log.Fatalln(err)
+		log.Info(err)
 	}
 	s = string(bufer)
 	log.Infof("получили данные с url %s", url)

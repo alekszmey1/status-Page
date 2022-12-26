@@ -17,7 +17,7 @@ func Incident() ([]IncidentData, error) {
 	url := "http://127.0.0.1:8383/accendent"
 	incidentStorage, err := createStorageIncident(url)
 	if err != nil {
-		log.Fatalln(err)
+		log.Info(err)
 		return incidentStorage, err
 	}
 	log.Info("Получены данные incident")
@@ -26,11 +26,9 @@ func Incident() ([]IncidentData, error) {
 
 func createStorageIncident(url string) ([]IncidentData, error) {
 	stringContent, err := helpers.UrlToString(url)
-
 	stringContentSlice := helpers.StringToSliceString(stringContent)
 	m := makeStorageIncident(stringContentSlice)
 	cl := cleanSliceIncident(m)
-
 	return cl, err
 }
 func makeStorageIncident(str []string) []*IncidentData {

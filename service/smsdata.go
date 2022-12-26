@@ -35,7 +35,7 @@ func SmsData() ([]*SMSData, error) {
 	smsDataCSV := "./simulator/sms.data"
 	smsDataString, err := helpers.CsvInString(smsDataCSV)
 	if err != nil {
-		log.Fatalln(err)
+		log.Info(err)
 		return storageSMS, err
 	}
 	splitStrings := strings.Split(smsDataString, "\n")

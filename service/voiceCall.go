@@ -39,7 +39,7 @@ func VoiceCall(c chan VoiceData) chan VoiceData {
 	smsDataCSV := "./simulator/voice.data"
 	smsDataString, err := helpers.CsvInString(smsDataCSV)
 	if err != nil {
-		log.Fatalln(err)
+		log.Info(err)
 		storageVoice.err = err
 		c <- storageVoice
 		return c
