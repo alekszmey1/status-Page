@@ -5,22 +5,19 @@ import (
 	"encoding/json"
 	"net/http"
 
-	log "github.com/sirupsen/logrus"
-
 	"github.com/gorilla/mux"
+
+	log "github.com/sirupsen/logrus"
+	//"github.com/gorilla/mux"
 )
 
 func App() {
-	r := mux.NewRouter()
 
-	mux := http.Server{
-		Addr:    "127.0.0.1:8282",
-		Handler: r,
-	}
-	r.Handle("/", http.FileServer(http.Dir("./web")))
-	r.HandleFunc("/api", handleConnection)
-	http.ListenAndServe(mux.Addr, r)
-
+	router := mux.NewRouter()
+	router.HandleFunc("/api", handleConnection).Methods("GET")
+	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./web/")))
+	http.Handle("/", router)
+	http.ListenAndServe("127.0.0.1:8282", nil)
 }
 
 func handleConnection(w http.ResponseWriter, r *http.Request) {
